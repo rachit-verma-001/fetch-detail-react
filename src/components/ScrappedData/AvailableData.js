@@ -26,7 +26,7 @@ const AvailableData = () => {
 
     if (!isFetched){
       try {
-        const response = await axios.get('https://react-fetch-detail.herokuapp.com/sales_qi_linkedin/sales_qi_linkedin');
+        const response = await axios.get('https://react-fetch-detail.herokuapp.com/sales_qi_linkedin');
         setUserData(response.data);
         setIsFetched(true);
         setShowDetails(true);
