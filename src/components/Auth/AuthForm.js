@@ -34,14 +34,14 @@ const AuthForm = () => {
 
     if (isLogin) {
       url =
-        'http://localhost:4000/users/sign_in';
+        'https://react-fetch-detail.herokuapp.com/sales_qi_linkedin/users/sign_in';
 
     } else {
       url =
-        'http://localhost:4000/users';
+        'https://react-fetch-detail.herokuapp.com/sales_qi_linkedin/users';
     }
 
-    if (url == "http://localhost:4000/users")
+    if (url === "https://react-fetch-detail.herokuapp.com/sales_qi_linkedin/users")
     {
       fetch(url, {
         method: 'POST',

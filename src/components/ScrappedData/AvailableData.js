@@ -10,92 +10,9 @@ const DUMMY_MEALS = [
     "followers": "1,974 followers",
     "no_of_employees": "73 employees",
     "logo": "https://media-exp1.licdn.com/dms/image/C4D0BAQEFAmZRJg3C-A/company-logo_200_200/0/1630304681248?e=1640822400&v=beta&t=66f5by_LN7-WHI_ldyrnqhkXWAjfR8yXQQiJrZGDNRI",
-    "employee_details": [
-        {
-            "name": "Faizan Mirza",
-            "designation": "Ruby on Rails Developer",
-            "connection": "• 2nd2nd degree connection",
-            "city": "Pune",
-            "shared_connections": "Mohit Maniar, Nilesh Navale, and 61 other shared connections",
-            "image": "https://media-exp1.licdn.com/dms/image/C5103AQHdT_8kSCiF6w/profile-displayphoto-shrink_100_100/0/1571481985532?e=1637798400&v=beta&t=YHEXfabsbGxCYOtmaN5hCFfg9eP84HqVzMQvQujMxkA"
-        },
-        {
-            "name": "Devesh Lashkari",
-            "designation": "Software Engineer at Protonshub | JavaScript | React | Next.js | Vue | Nuxt.js",
-            "connection": "• 2nd2nd degree connection",
-            "city": "Indore",
-            "shared_connections": "Vikas Rishishwar, Sidhartha Kukreja, and 247 other shared connections",
-            "image": "https://media-exp1.licdn.com/dms/image/C4E03AQGgBsVhAFbwHg/profile-displayphoto-shrink_100_100/0/1597215753864?e=1637798400&v=beta&t=P63NTROsMXPnBOeLBw5VrG3e_WnK39NDeuI1AZEG4-s"
-        },
-        {
-            "name": "Harshit Sahu",
-            "designation": "Reactjs | Redux | JavaScript | ES6 | Java | HTML | CSS",
-            "connection": "• 2nd2nd degree connection",
-            "city": "Indore",
-            "shared_connections": "Priya Geete, Roshni Jain, and 16 other shared connections",
-            "image": "https://media-exp1.licdn.com/dms/image/C5603AQFGgcMcBxQWFw/profile-displayphoto-shrink_100_100/0/1616326369164?e=1637798400&v=beta&t=wS2NboMqia3aJ6QpNlda8fI9cFTveS83w7W1YsBf0Rw"
-        },
-        {
-            "name": "Deepak Chauhan",
-            "designation": "Software Engineer at Protonshub Technologies",
-            "connection": "• 2nd2nd degree connection",
-            "city": "Indore",
-            "shared_connections": "SoftGrid Computers, Megha ., and 13 other shared connections",
-            "image": "https://media-exp1.licdn.com/dms/image/C4D03AQGgDIv4rwEz9g/profile-displayphoto-shrink_100_100/0/1517267445478?e=1637798400&v=beta&t=c97zTd6r0hCz-u_nPB8_pbHRLJeW2KyVdLBz7sjDJ7Y"
-        },
-        {
-            "name": "Rohit Khillare",
-            "designation": "Software Developer at Protonshub Technologies",
-            "connection": "• 2nd2nd degree connection",
-            "city": "Indore",
-            "shared_connections": "Prachi Kanungo, Shraddha Sharma, and 106 other shared connections",
-            "image": "https://media-exp1.licdn.com/dms/image/C5603AQEljXClIVpFKg/profile-displayphoto-shrink_100_100/0/1618080914789?e=1637798400&v=beta&t=c8DoApGidlRr_DkaUqlPLd0Myhcn4h1qxN75MAmH4oA"
-        },
-        {
-            "name": "Nikita ",
-            "designation": "Sr. Business Development Manager",
-            "connection": "• 2nd2nd degree connection",
-            "city": "Indore",
-            "shared_connections": "Tarun Shah, Tanu Goyal, and 38 other shared connections",
-            "image": "https://media-exp1.licdn.com/dms/image/C5103AQFVaIIygCaZWg/profile-displayphoto-shrink_100_100/0/1570789844878?e=1637798400&v=beta&t=JVCLcbEEA_zfvWfENSkTjKDRUTtczbjOitatuC7o8P8"
-        },
-        {
-            "name": "GAURA",
-            "designation": "Senior Frontend Developer at Protonshub Technologies",
-            "connection": "• 2nd2nd degree connection",
-            "city": "Indore",
-            "shared_connections": "Anjali Tiwari, Rakshit Khandelwal, and 37 other shared connections",
-            "image": "https://media-exp1.licdn.com/dms/image/C4D03AQFDY8Dehwi_2Q/profile-displayphoto-shrink_100_100/0/1606801433671?e=1637798400&v=beta&t=-7dqH8L4dYRRsQtJjfhHXoM7AbHyaqu0drY57edmWgk"
-        },
-        {
-            "name": "",
-            "designation": "Software Engineer at Protonshub Technologies",
-            "connection": "• 2nd2nd degree connection",
-            "city": "Indore",
-            "shared_connections": "Akanksha Dubey, yamini bangur, and 14 other shared connections",
-            "image": "https://media-exp1.licdn.com/dms/image/C5103AQEtwvp69pTTNQ/profile-displayphoto-shrink_100_100/0/1532615264501?e=1637798400&v=beta&t=fdRV0sDbCStAlV8NsmfamW_ZWY3-NCNaEVvCqFmHqvY"
-        },
-        {
-            "name": "Shabnam Mansoori",
-            "designation": "Software Developer| Frontend Developer|Chat Bot| IOT| Freelancer",
-            "connection": "• 2nd2nd degree connection",
-            "city": "Udaipur",
-            "shared_connections": "Dr. Surendra Kumar Shukla, Jitendra Gandhi, and 12 other shared connections",
-            "image": "https://media-exp1.licdn.com/dms/image/C5103AQG1vRwiEuFuZA/profile-displayphoto-shrink_100_100/0/1529435552919?e=1637798400&v=beta&t=oDGc7Me6x21fz5vYXZ2cHmub0wB-V14OmiHIE7V0pIY"
-        },
-        {
-            "name": "NIRMAL CHOUHAN",
-            "designation": "Python Developer at Protonshub Technologies",
-            "connection": "• 2nd2nd degree connection",
-            "city": "Indore",
-            "shared_connections": "Krishna Jangid, Protonshub Technologies, and 3 other shared connections",
-            "image": "https://media-exp1.licdn.com/dms/image/D5635AQHgPEH5l_YyIg/profile-framedphoto-shrink_100_100/0/1628252763893?e=1632668400&v=beta&t=4b0ZIQYQ8w5sfw-uh0jWvQP2Z-j-DDqtE_1T2cKCec8"
-        }
-    ],
     "employee_count": 10
-}
+  }
 ];
-
 
 const AvailableData = () => {
   const [isFetched, setIsFetched] = useState(false);
@@ -109,8 +26,7 @@ const AvailableData = () => {
 
     if (!isFetched){
       try {
-
-        const response = await axios.get('http://localhost:4000/sales_qi_linkedin');
+        const response = await axios.get('https://react-fetch-detail.herokuapp.com/sales_qi_linkedin/sales_qi_linkedin');
         setUserData(response.data);
         setIsFetched(true);
         setShowDetails(true);
