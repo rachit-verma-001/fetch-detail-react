@@ -10,7 +10,7 @@ const AvailableData = () => {
   let employee_details;
   let founders_details;
   const switchDetailModeHandler = async () => {
-    const axios = require('axios').default;
+    // const axios = require('axios').default;
 
     if (!isFetched){
       try {
