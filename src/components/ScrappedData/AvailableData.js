@@ -1,8 +1,38 @@
 import Card from '../UI/Card';
-import classes from './AvailableData.module.css';
 import { useState} from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
+import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
+import { styled } from '@mui/material/styles';
+import ButtonBase from '@mui/material/ButtonBase';
+
+const Img = styled('img')({
+  margin: 'auto',
+  display: 'block',
+  maxWidth: '100%',
+  maxHeight: '100%',
+  height:'237px'
+});
+
+
+const useStyles = makeStyles((theme) => ({
+  dataClass:{
+    maxWidth: "60rem",
+    width: "90%",
+    margin: "2rem auto",
+    animation: "data-appear 1s ease-out forwards",
+  },
+}));
+
+const Item = styled(Paper)(({ theme }) => ({
+  ...theme.typography.body2,
+  padding: theme.spacing(1),
+  color: theme.palette.text.secondary,
+}));
 
 const AvailableData = () => {
+  const data_classes = useStyles();
   const [isFetched, setIsFetched] = useState(false);
   const [userData, setUserData] = useState({});
   const [showDetails, setShowDetails] = useState(false);
@@ -240,51 +270,63 @@ const AvailableData = () => {
       employee_details = userData.employee_details.map((user) => (
       <div>
         <Card>
-          <p><u><b>Name:</b></u>  {user.first_name + " " + user.last_name}</p>
-          <p><u><b>Designation:</b></u>  {user.designation}</p>
-          <p><u><b>City:</b></u>  {user.city}</p>
-          <p><u><b>Connections:</b></u>  {user.connection}</p>
-          <p><u><b>Email:</b></u>  {user.email}</p>
-          <p><u><b>Phone:</b></u>  {user.mobile_no}</p>
-
-          <p><u><b>Description:</b></u>  {user.description}</p>
-          <img className={classes['main-image']} src={user.image} alt='Default!' />
+          <Grid container spacing={2}>
+            <Grid item md={8}>
+              <Item><p><u><b>Name:</b></u>  {user.first_name + " " + user.last_name}</p></Item>
+              <Item><p><u><b>Designation:</b></u>  {user.designation}</p></Item>
+              <Item><p><u><b>City:</b></u>  {user.city}</p></Item>
+              <Item><p><u><b>Connections:</b></u>  {user.connection}</p></Item>
+              <Item><p><u><b>Email:</b></u>  {user.email}</p></Item>
+              <Item><p><u><b>Phone:</b></u>  {user.mobile_no}</p></Item>
+              <Item><p><u><b>Description:</b></u>  {user.description}</p></Item>
+            </Grid>
+            <Grid item>
+              <ButtonBase sx={{ width: 226 }}>
+                <Img alt="complex" src={user.image} />
+              </ButtonBase>
+            </Grid>
+          </Grid>
         </Card>
       </div>
     ));
 
     founders_details = userData.founder_details.map((user) => (
       <div>
-        <Card>
-          <p><u><b>Name:</b></u>  {user.first_name + " " + user.last_name}</p>
-          <p><u><b>Designation:</b></u>  {user.designation}</p>
-          <p><u><b>City:</b></u>  {user.city}</p>
-          <p><u><b>Email:</b></u>  {user.email}</p>
-          <p><u><b>Phone:</b></u>  {user.mobile_no}</p>
-          <p><u><b>Description:</b></u>  {user.description}</p>
-          <img className={classes['main-image']} src={user.image} alt='Default!' />
-        </Card>
+            <Card>
+          <Grid container spacing={2}>
+            <Grid item md={8}>
+              <Item><p><u><b>Name:</b></u>  {user.first_name + " " + user.last_name}</p></Item>
+              <Item><p><u><b>Designation:</b></u>  {user.designation}</p></Item>
+              <Item><p><u><b>City:</b></u>  {user.city}</p></Item>
+              <Item><p><u><b>Email:</b></u>  {user.email}</p></Item>
+              <Item><p><u><b>Phone:</b></u>  {user.mobile_no}</p></Item>
+              <Item><p><u><b>Description:</b></u>  {user.description}</p></Item>
+            </Grid>
+            <Grid item>
+              <ButtonBase sx={{ width: 226 }}>
+                <Img alt="complex" src={user.image} />
+              </ButtonBase>
+            </Grid>
+          </Grid>
+            </Card>
       </div>
     ));
   }
-
   return (
-    <section className={classes.data}>
-      <button
+    <section className={data_classes.dataClass}>
+      <Button variant="contained"
             type='button'
-            className={classes.toggle}
+            className={data_classes.toggle}
             onClick={switchDetailModeHandler}
           >
             {showDetails ? 'Hide Details' : 'Fetch Detais'}
-          </button>
+          </Button>
       {showDetails && <div> <Card>
       <ul><li>{heading_title}</li></ul>
       </Card>
-
       <Card>
       <ul><li><h2>Founders Details:</h2><br></br>{founders_details}</li></ul>
       </Card>
-
       <Card>
       <ul><li><h2>Employee Details:</h2><br></br>{employee_details}</li></ul>
       </Card></div>}
