@@ -33,15 +33,19 @@ const AuthForm = () => {
     let url;
 
     if (isLogin) {
-      url =
-        'https://react-fetch-detail.herokuapp.com/users/sign_in';
-
-    } else {
-      url =
-        'https://react-fetch-detail.herokuapp.com/users';
+      url ='https://react-fetch-detail.herokuapp.com/users/sign_in';
+        // url="http://localhost:4000/api/v1/auth/sign_in"
+        // url = 'http://localhost:4000/users/sign_in'
+      } else {
+        url ='https://react-fetch-detail.herokuapp.com/users';
+        // url="http://localhost:4000/api/v1/auth"
+      // url = 'http://localhost:4000/users'
     }
-
     if (url === "https://react-fetch-detail.herokuapp.com/users")
+    // if (url === "http://localhost:4000/users")
+    // if (url === "http://localhost:4000/api/v1/auth")
+
+
     {
       fetch(url, {
         method: 'POST',
@@ -49,7 +53,8 @@ const AuthForm = () => {
           user:
           {
             email: enteredEmail,
-            password: enteredPassword
+            password: enteredPassword,
+            password_confirmation: enteredPassword
           }
         }),
         headers: {
@@ -132,6 +137,7 @@ const AuthForm = () => {
         </div>
         <div className={classes.actions}>
           {!isLoading && (
+            // <button>{isLogin ? 'Login' : 'Create Account'}</button>
             <button>{isLogin ? 'Login' : 'Create Account'}</button>
           )}
           {isLoading && <p>Sending request...</p>}
@@ -140,8 +146,9 @@ const AuthForm = () => {
             className={classes.toggle}
             onClick={switchAuthModeHandler}
           >
-            {isLogin ? 'Create new account' : 'Login with existing account'}
+            {/* {isLogin ? 'Create new account' : 'Login with existing account'} */}
           </button>
+          {/* <Button variant="contained">Hello World</Button> */}
         </div>
       </form>
     </section>
