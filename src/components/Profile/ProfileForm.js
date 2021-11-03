@@ -1,8 +1,6 @@
 // import { useRef, useContext } from 'react';
 import { useRef } from 'react';
-
 import { useHistory } from 'react-router-dom';
-
 // import AuthContext from '../../store/auth-context';
 import classes from './ProfileForm.module.css';
 
@@ -11,32 +9,30 @@ const ProfileForm = () => {
 
   const newPasswordInputRef = useRef();
   // const authCtx = useContext(AuthContext);
-
   const submitHandler = (event) => {
-    event.preventDefault();
 
-    // const enteredNewPassword = newPasswordInputRef.current.value;
-    history.replace('/')
-    // fetch('https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyBZhsabDexE9BhcJbGxnZ4DiRlrCN9xe24', {
-    //   method: 'POST',
-    //   body: JSON.stringify({
-    //     idToken: authCtx.token,
-    //     password: enteredNewPassword,
-    //     returnSecureToken: false
-    //   }),
-    //   headers: {
-    //     'Content-Type': 'application/json'
-    //   }
-    // }).then(res => {
-    //   history.replace('/');
-    // });
+    event.preventDefault();
+    const enteredNewPassword = newPasswordInputRef.current.value;
+    const password = { update_password: enteredNewPassword };
+    const headers = {
+      'X-USER-TOKEN': localStorage.getItem('token'),
+      "X-USER-EMAIL":localStorage.getItem('email')
+    };
+    const axios = require('axios').default;
+    axios.put('http://localhost:4000/api/v1/change_password', password, { headers })
+    .then((responseData) => { console.log(responseData);
+      alert('password updated successfully')
+      history.replace('/');
+    })
+    .catch((error) => { console.log(error); alert('Something Went Wrong') })
+
   };
 
   return (
     <form className={classes.form} onSubmit={submitHandler}>
       <div className={classes.control}>
         <label htmlFor='new-password'>New Password</label>
-        <input type='password' id='new-password' minLength="7" ref={newPasswordInputRef} />
+        <input type='password' id='new-password' minLength="7" required ref={newPasswordInputRef} />
       </div>
       <div className={classes.action}>
         <button>Change Password</button>
