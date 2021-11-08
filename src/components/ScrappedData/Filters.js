@@ -5,6 +5,8 @@ import { styled, alpha } from '@mui/material/styles';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
+import { company_name } from './AvailableData';
+
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -53,11 +55,14 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
+export let dataFiltered = null;
 
 export default function Filters() {
 
   const [firstName, setUserFirstName] = useState();
 
+  const[filteredCompany, setFilteredCompany] = useState();
+  const[filterCall, setFilterCall] = useState(false);
   const firstNameChangeHandler = (event) => {
     setUserFirstName(event.target.value);
   };
@@ -96,7 +101,8 @@ export default function Filters() {
           last_name:lastName,
           city:city,
           email:email,
-          designation:designation
+          designation:designation,
+          company_name: company_name
         },
         headers:{
           'X-USER-TOKEN': localStorage.getItem('token'),
@@ -105,8 +111,15 @@ export default function Filters() {
       })
       .then(function (response) {
         if (response.data.success === false)
-        {alert(response.data.message)}
+        {
+          alert(response.data.message)
+          // setIsFiltered(false)
+        }
         else{
+
+          dataFiltered = response.data;
+          setFilterCall(true);
+          setFilteredCompany(response.data)
         }
 
       })
@@ -121,9 +134,10 @@ export default function Filters() {
 
   }
 
-  return (
+  return (<>
+
   <Grid container spacing={2}>
-    <Grid item md={3}>
+    <Grid item xs={6}>
       <Item>
         <Search>
             <SearchIconWrapper>
@@ -137,7 +151,7 @@ export default function Filters() {
       </Item>
     </Grid>
 
-    <Grid item md={3}>
+    <Grid item xs={6}>
       <Item>
         <Search>
             <SearchIconWrapper>
@@ -152,7 +166,7 @@ export default function Filters() {
     </Grid>
 
 
-    <Grid item md={3}>
+    <Grid item xs={6}>
       <Item>
         <Search>
             <SearchIconWrapper>
@@ -167,7 +181,7 @@ export default function Filters() {
     </Grid>
 
 
-    <Grid item md={3}>
+    <Grid item xs={6}>
       <Item>
         <Search>
             <SearchIconWrapper>
@@ -181,7 +195,7 @@ export default function Filters() {
       </Item>
     </Grid>
 
-    <Grid item md={3}>
+    <Grid item xs={12}>
       <Item>
         <Search>
             <SearchIconWrapper>
@@ -195,11 +209,12 @@ export default function Filters() {
       </Item>
     </Grid>
 
-    <Grid item>
-      <Item>
-      <Button variant="contained" onClick={filterData}>Filter</Button>
-      </Item>
-    </Grid>
 
   </Grid>
+
+    <Grid item mt={2} container spacing={0} direction="column" alignItems="center" justifyContent="center" >
+      <Button variant="contained" onClick={filterData} style={{width:'240px'}}>Filter</Button>
+    </Grid>
+
+  </>
 )}
