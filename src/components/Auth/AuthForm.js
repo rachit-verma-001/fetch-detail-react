@@ -4,6 +4,7 @@ import { useHistory } from 'react-router-dom';
 import AuthContext from '../../store/auth-context';
 import classes from './AuthForm.module.css';
 
+
 const AuthForm = () => {
   const history = useHistory();
   const emailInputRef = useRef();
@@ -13,6 +14,10 @@ const AuthForm = () => {
 
   const [isLogin, setIsLogin] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+
+
+  const [error, setError] = useState(false);
+  const[message, setMessage] = useState();
 
   const switchAuthModeHandler = () => {
     setIsLogin((prevState) => !prevState);
@@ -24,27 +29,26 @@ const AuthForm = () => {
     const enteredEmail = emailInputRef.current.value;
     const enteredPassword = passwordInputRef.current.value;
 
-    if (enteredPassword.length < 5) {
-      alert('Password must contain atleast 5 characters');
-      return;
-    }
+    // if (enteredPassword.length < 5) {
+    //   alert('Password must contain atleast 5 characters');
+    //   return;
+    // }
 
     setIsLoading(true);
     let url;
 
     if (isLogin) {
-      url ='https://react-fetch-detail.herokuapp.com/users/sign_in';
+      // url ='https://react-fetch-detail.herokuapp.com/users/sign_in';
         // url="http://localhost:4000/api/v1/auth/sign_in"
-        // url = 'http://localhost:4000/users/sign_in'
+        url = 'http://c2c8-122-168-240-116.ngrok.io/api/v1/users/sign_in'
       } else {
-        url ='https://react-fetch-detail.herokuapp.com/users';
+        // url ='https://react-fetch-detail.herokuapp.com/users';
         // url="http://localhost:4000/api/v1/auth"
-      // url = 'http://localhost:4000/users'
+      url = 'http://c2c8-122-168-240-116.ngrok.io/api/v1/users'
     }
-    if (url === "https://react-fetch-detail.herokuapp.com/users")
-    // if (url === "http://localhost:4000/users")
+    // if (url === "https://react-fetch-detail.herokuapp.com/users")
+    if (url === "http://c2c8-122-168-240-116.ngrok.io/api/v1/users")
     // if (url === "http://localhost:4000/api/v1/auth")
-
 
     {
       fetch(url, {
@@ -106,14 +110,17 @@ const AuthForm = () => {
         }
       })
       .then((data) => {
+
         const expirationTime = new Date(
-          new Date().getTime() + 365*1000
+          new Date().getTime() + 365*3000
         );
-        authCtx.login(data.user.auth_token, expirationTime.toISOString());
+        authCtx.login(data.user.auth_token, data.user.email, expirationTime.toISOString());
         history.replace('/');
       })
       .catch((err) => {
-        alert(err.message);
+        setError(true);
+        setMessage(err.message);
+        // alert(err.message);
       });
     }
   };
@@ -123,11 +130,11 @@ const AuthForm = () => {
       <h1>{isLogin ? 'Login' : 'Sign Up'}</h1>
       <form onSubmit={submitHandler}>
         <div className={classes.control}>
-          <label htmlFor='email'>Your Email</label>
-          <input type='email' id='email' required ref={emailInputRef} />
+          <label htmlFor='email' style={{float:'left'}}>Your Email</label>
+          <input type='email' id='email' required ref={emailInputRef}  />
         </div>
         <div className={classes.control}>
-          <label htmlFor='password'>Your Password</label>
+          <label htmlFor='password' style={{float:'left'}}>Your Password</label>
           <input
             type='password'
             id='password'
@@ -151,6 +158,8 @@ const AuthForm = () => {
           {/* <Button variant="contained">Hello World</Button> */}
         </div>
       </form>
+          {error &&
+            <span style={{ color: 'red' }}>{message}</span>}
     </section>
   );
 };

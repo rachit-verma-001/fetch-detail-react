@@ -19,12 +19,15 @@ const calculateRemainingTime = (expirationTime) => {
 };
 
 const retrieveStoredToken = () => {
+
   const storedToken = localStorage.getItem('token');
+
   const storedExpirationDate = localStorage.getItem('expirationTime');
 
   const remainingTime = calculateRemainingTime(storedExpirationDate);
 
   if (remainingTime <= 3600) {
+    localStorage.removeItem('email');
     localStorage.removeItem('token');
     localStorage.removeItem('expirationTime');
     return null;
@@ -38,7 +41,7 @@ const retrieveStoredToken = () => {
 
 export const AuthContextProvider = (props) => {
   const tokenData = retrieveStoredToken();
-  
+
   let initialToken;
   if (tokenData) {
     initialToken = tokenData.token;
@@ -51,6 +54,7 @@ export const AuthContextProvider = (props) => {
   const logoutHandler = useCallback(() => {
     setToken(null);
     localStorage.removeItem('token');
+    localStorage.removeItem('email');
     localStorage.removeItem('expirationTime');
 
     if (logoutTimer) {
@@ -58,9 +62,11 @@ export const AuthContextProvider = (props) => {
     }
   }, []);
 
-  const loginHandler = (token, expirationTime) => {
+  const loginHandler = (token, email, expirationTime) => {
     setToken(token);
+
     localStorage.setItem('token', token);
+    localStorage.setItem('email', email);
     localStorage.setItem('expirationTime', expirationTime);
 
     const remainingTime = calculateRemainingTime(expirationTime);
