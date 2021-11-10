@@ -4,6 +4,10 @@ import { useHistory } from 'react-router-dom';
 // import AuthContext from '../../store/auth-context';
 import classes from './ProfileForm.module.css';
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+
 const ProfileForm = () => {
   const history = useHistory();
 
@@ -19,16 +23,23 @@ const ProfileForm = () => {
       "X-USER-EMAIL":localStorage.getItem('email')
     };
     const axios = require('axios').default;
-    axios.put('http://localhost:4000/api/v1/change_password', password, { headers })
+    axios.put('http://c2c8-122-168-240-116.ngrok.io/api/v1/change_password', password, { headers })
     .then((responseData) => { console.log(responseData);
-      alert('password updated successfully')
-      history.replace('/');
+        toast.success("Password updated successfully",  {
+          position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+          onClose: () => history.replace('/')
+        });
     })
     .catch((error) => { console.log(error); alert('Something Went Wrong') })
-
   };
 
-  return (
+  return (<>
     <form className={classes.form} onSubmit={submitHandler}>
       <div className={classes.control}>
         <label htmlFor='new-password'>New Password</label>
@@ -37,7 +48,17 @@ const ProfileForm = () => {
       <div className={classes.action}>
         <button>Change Password</button>
       </div>
+    <ToastContainer position="top-right"
+autoClose={5000}
+hideProgressBar={false}
+newestOnTop={false}
+closeOnClick
+rtl={false}
+pauseOnFocusLoss
+draggable
+pauseOnHover/>
     </form>
+    </>
   );
 };
 

@@ -5,8 +5,11 @@ import { styled, alpha } from '@mui/material/styles';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
-import { company_name } from './AvailableData';
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+import { company_name } from './AvailableData';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -95,7 +98,7 @@ export default function Filters() {
     const axios = require('axios').default;
 
     try {
-      axios.get('http://localhost:4000/api/v1/search', {
+      axios.get('http://c2c8-122-168-240-116.ngrok.io/api/v1/search', {
         params: {
           first_name: firstName,
           last_name:lastName,
@@ -112,7 +115,16 @@ export default function Filters() {
       .then(function (response) {
         if (response.data.success === false)
         {
-          alert(response.data.message)
+          // alert(response.data.message)
+          toast.error(response.data.message,  {
+            position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          });
           // setIsFiltered(false)
         }
         else{
@@ -125,11 +137,29 @@ export default function Filters() {
       })
       .catch(function (error) {
         console.log(error);
-        alert(error);
+        toast.error(error,  {
+          position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        });
+        // alert(error);
       })
     } catch (error) {
       console.error(error);
-      alert(error);
+      toast.error(error,  {
+        position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      });
+      // alert(error);
     }
 
   }
@@ -215,6 +245,15 @@ export default function Filters() {
     <Grid item mt={2} container spacing={0} direction="column" alignItems="center" justifyContent="center" >
       <Button variant="contained" onClick={filterData} style={{width:'240px'}}>Filter</Button>
     </Grid>
+    <ToastContainer position="top-right"
+autoClose={5000}
+hideProgressBar={false}
+newestOnTop={false}
+closeOnClick
+rtl={false}
+pauseOnFocusLoss
+draggable
+pauseOnHover/>
 
   </>
 )}

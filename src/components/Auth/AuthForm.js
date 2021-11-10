@@ -4,6 +4,7 @@ import { useHistory } from 'react-router-dom';
 import AuthContext from '../../store/auth-context';
 import classes from './AuthForm.module.css';
 
+
 const AuthForm = () => {
   const history = useHistory();
   const emailInputRef = useRef();
@@ -39,14 +40,14 @@ const AuthForm = () => {
     if (isLogin) {
       // url ='https://react-fetch-detail.herokuapp.com/users/sign_in';
         // url="http://localhost:4000/api/v1/auth/sign_in"
-        url = 'http://localhost:4000/api/v1/users/sign_in'
+        url = 'http://c2c8-122-168-240-116.ngrok.io/api/v1/users/sign_in'
       } else {
         // url ='https://react-fetch-detail.herokuapp.com/users';
         // url="http://localhost:4000/api/v1/auth"
-      url = 'http://localhost:4000/api/v1/users'
+      url = 'http://c2c8-122-168-240-116.ngrok.io/api/v1/users'
     }
     // if (url === "https://react-fetch-detail.herokuapp.com/users")
-    if (url === "http://localhost:4000/api/v1/users")
+    if (url === "http://c2c8-122-168-240-116.ngrok.io/api/v1/users")
     // if (url === "http://localhost:4000/api/v1/auth")
 
     {

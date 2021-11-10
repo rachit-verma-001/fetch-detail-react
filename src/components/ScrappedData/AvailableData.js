@@ -12,7 +12,8 @@ import Input from '@mui/material/Input';
 // import { dataFiltered } from './Filters';
 import Csv from './ExportCsv'
 
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import SearchIcon from '@mui/icons-material/Search';
 import InputBase from '@mui/material/InputBase';
@@ -99,7 +100,7 @@ const AvailableData = (props) => {
 
   const [firstName, setUserFirstName] = useState();
   const [isFiltered, setIsFiltered] = useState(false);
-
+  const [isLoading, setIsLoading] = useState(false);
   const[filteredCompany, setFilteredCompany] = useState();
   // const[filterCall, setFilterCall] = useState(false);
   const firstNameChangeHandler = (event) => {
@@ -135,7 +136,7 @@ const AvailableData = (props) => {
     const axios = require('axios').default;
 
     try {
-      axios.get('http://localhost:4000/api/v1/search', {
+      axios.get('http://c2c8-122-168-240-116.ngrok.io/api/v1/search', {
         params: {
           first_name: firstName,
           last_name:lastName,
@@ -152,7 +153,16 @@ const AvailableData = (props) => {
       .then(function (response) {
         if (response.data.success === false)
         {
-          alert(response.data.message)
+          // alert(response.data.message)
+          toast.error(response.data.message,  {
+            position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          });
           setIsFiltered(false)
         }
         else{
@@ -167,11 +177,27 @@ const AvailableData = (props) => {
       })
       .catch(function (error) {
         console.log(error);
-        alert(error);
+        toast.error(error,  {
+          position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        });
       })
     } catch (error) {
       console.error(error);
-      alert(error);
+      toast.error(error,  {
+        position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      });
     }
 
   }
@@ -197,10 +223,11 @@ const AvailableData = (props) => {
     let sent_url;
     event.preventDefault();
     if (event.nativeEvent.submitter.name === "Fetch"){
-      sent_url = "http://localhost:4000/api/v1/company_profile"
+      sent_url = "http://c2c8-122-168-240-116.ngrok.io/api/v1/company_profile"
     }
     else{
-      sent_url = "http://localhost:4000/api/v1/resync"
+      setIsLoading(true);
+      sent_url = "http://c2c8-122-168-240-116.ngrok.io/api/v1/resync"
       // sent_url = "http://localhost:4000/api/v1/company_profile"
 
     }
@@ -220,13 +247,25 @@ const AvailableData = (props) => {
           }
         })
         .then(function (response) {
+          setIsLoading(false);
           if (response.data.success === false)
           {
             setError(true);
             setMessage(response.data.message);
-            alert(response.data.message)
+            toast.error(response.data.message,  {
+              position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            });
+
+            // alert(response.data.message)
           }
           else{
+
           setUserData(response.data)
           setIsFetched(true);
           setIsFiltered(false);
@@ -234,12 +273,32 @@ const AvailableData = (props) => {
           setError(false);
         })
         .catch(function (error) {
+          setIsLoading(false);
           console.log(error);
-          alert(error);
+          toast.error("No Such Company Details Present",  {
+            position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          });
+          // alert(error);
         })
       } catch (error) {
+        setIsLoading(false);
+        // alert(error)
         console.error(error);
-        alert(error);
+        toast.error("No Such Company Details Present",  {
+          position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        });
       }
 
     }
@@ -336,21 +395,60 @@ const AvailableData = (props) => {
               <Button variant='outlined'
                   type='submit' sx = {{mt:20}}
                   className={data_classes.toggle} name="Fetch"
-                >
+                disabled = {isLoading}>
                   {showDetails ? 'Hide Details' : 'Fetch Detais'}
                 </Button>
             </Box>
           </Grid>
           <Grid item>
             <Box pt={2}>
-              <Button variant="outlined"
+
+              {/* <Button variant="outlined"
                   type='submit' sx = {{mt:20}}
                   className={data_classes.toggle} name="Resync" disabled={showDetails}
                 >
                   Resync
                   {/* {showDetails ? 'Hide Details' : 'Resync'} */}
-                </Button>
+                {/* </Button> */}
+
+
+                {!isLoading && (
+            // <button>{isLogin ? 'Login' : 'Create Account'}</button>
+            <Button variant="outlined"
+            type='submit' sx = {{mt:20}}
+            className={data_classes.toggle} name="Resync" disabled={showDetails}
+          >
+            Resync
+            {/* {showDetails ? 'Hide Details' : 'Resync'} */}
+          </Button>
+            // <button>{isLogin ? 'Login' : 'Create Account'}</button>
+          )}
+          {isLoading &&
+
+
+          <Button variant="outlined"
+          type='submit' sx = {{mt:20}}
+          className={data_classes.toggle} name="Resync" disabled={true}
+        >
+          Resyncing..
+          {/* {showDetails ? 'Hide Details' : 'Resync'} */}
+        </Button>
+          }
+
+
+
+
+
+
+
+
             </Box>
+
+
+
+
+
+
           </Grid>
         </Grid>
       </form>
@@ -448,6 +546,15 @@ const AvailableData = (props) => {
       </Card></div>}
       {error &&
             <span style={{ color: 'red' }}>{message}</span>}
+                <ToastContainer position="top-right"
+autoClose={5000}
+hideProgressBar={false}
+newestOnTop={false}
+closeOnClick
+rtl={false}
+pauseOnFocusLoss
+draggable
+pauseOnHover/>
     </section>
   );
 };
