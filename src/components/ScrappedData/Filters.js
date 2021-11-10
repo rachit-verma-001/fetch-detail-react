@@ -98,7 +98,7 @@ export default function Filters() {
     const axios = require('axios').default;
 
     try {
-      axios.get('http://c2c8-122-168-240-116.ngrok.io/api/v1/search', {
+      axios.get('https://c2c8-122-168-240-116.ngrok.io/api/v1/search', {
         params: {
           first_name: firstName,
           last_name:lastName,
