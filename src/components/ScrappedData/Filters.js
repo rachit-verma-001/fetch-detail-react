@@ -9,7 +9,7 @@ import Button from '@mui/material/Button';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import { company_name } from './AvailableData';
+import { company_name } from './AddData';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -98,7 +98,7 @@ export default function Filters() {
     const axios = require('axios').default;
 
     try {
-      axios.get('https://c2c8-122-168-240-116.ngrok.io/api/v1/search', {
+      axios.get('http://localhost:4000/api/v1/search', {
         params: {
           first_name: firstName,
           last_name:lastName,

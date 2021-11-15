@@ -1,10 +1,10 @@
 import { Fragment } from 'react';
-import AvailableData from './AvailableData';
+import AddData from './AddData';
 
 const Details = () => {
   return (
     <Fragment>
-      <AvailableData />
+      <AddData />
     </Fragment>
   );
 };
