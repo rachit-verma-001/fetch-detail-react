@@ -1,10 +1,13 @@
+import * as React from 'react';
 import Card from '../UI/Card';
 import { useState} from 'react';
+import {useParams} from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import { styled, alpha } from '@mui/material/styles';
+import { useEffect, useCallback } from 'react';
 import ButtonBase from '@mui/material/ButtonBase';
 import Box from '@material-ui/core/Box';
 import Input from '@mui/material/Input';
@@ -98,6 +101,7 @@ let company_name = null;
 
 const AvailableData = (props) => {
 
+
   const [firstName, setUserFirstName] = useState();
   const [isFiltered, setIsFiltered] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -136,7 +140,7 @@ const AvailableData = (props) => {
     const axios = require('axios').default;
 
     try {
-      axios.get('https://c2c8-122-168-240-116.ngrok.io/api/v1/search', {
+      axios.get(`${ngrokUrl}/api/v1/search`, {
         params: {
           first_name: firstName,
           last_name:lastName,
@@ -223,11 +227,11 @@ const AvailableData = (props) => {
     let sent_url;
     event.preventDefault();
     if (event.nativeEvent.submitter.name === "Fetch"){
-      sent_url = "https://c2c8-122-168-240-116.ngrok.io/api/v1/company_profile"
+      sent_url = `${ngrokUrl}/api/v1/company_profile`
     }
     else{
       setIsLoading(true);
-      sent_url = "https://c2c8-122-168-240-116.ngrok.io/api/v1/resync"
+      sent_url = `${ngrokUrl}/api/v1/resync`
       // sent_url = "http://localhost:4000/api/v1/company_profile"
 
     }
@@ -235,7 +239,6 @@ const AvailableData = (props) => {
 
     // if (!isFetched){
       if(!showDetails){
-      try {
         axios.get(sent_url, {
           params: {
             company_name: name,
@@ -272,34 +275,6 @@ const AvailableData = (props) => {
           setShowDetails(true);}
           setError(false);
         })
-        .catch(function (error) {
-          setIsLoading(false);
-          console.log(error);
-          toast.error("No Such Company Details Present",  {
-            position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          });
-          // alert(error);
-        })
-      } catch (error) {
-        setIsLoading(false);
-        // alert(error)
-        console.error(error);
-        toast.error("No Such Company Details Present",  {
-          position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        });
-      }
 
     }
     else
@@ -378,81 +353,18 @@ const AvailableData = (props) => {
     </div>)
   }
 
+
+
+  console.log(useParams())
+
   return (
+
     <section className={data_classes.dataClass}>
+
       <Grid container spacing={0} direction="column" alignItems="center" justifyContent="center">
-      <form alignItems="center" onSubmit={switchDetailModeHandler}>
-        <div >
-          <Input placeholder="Name" inputProps={ariaLabel} required onChange={e => setName(e.target.value)} disabled={showDetails} style={{width:"500px"}}  />
-        </div>
-        <div >
-          <Input placeholder="Url" inputProps={ariaLabel} required onChange={e => setUrl(e.target.value)} disabled={showDetails} style={{width:"500px", marginTop:"10px"}}  />
-        </div>
 
-        <Grid container spacing={2}>
-          <Grid item>
-            <Box pt={2}>
-              <Button variant='outlined'
-                  type='submit' sx = {{mt:20}}
-                  className={data_classes.toggle} name="Fetch"
-                disabled = {isLoading}>
-                  {showDetails ? 'Hide Details' : 'Fetch Detais'}
-                </Button>
-            </Box>
-          </Grid>
-          <Grid item>
-            <Box pt={2}>
-
-              {/* <Button variant="outlined"
-                  type='submit' sx = {{mt:20}}
-                  className={data_classes.toggle} name="Resync" disabled={showDetails}
-                >
-                  Resync
-                  {/* {showDetails ? 'Hide Details' : 'Resync'} */}
-                {/* </Button> */}
-
-
-                {!isLoading && (
-            // <button>{isLogin ? 'Login' : 'Create Account'}</button>
-            <Button variant="outlined"
-            type='submit' sx = {{mt:20}}
-            className={data_classes.toggle} name="Resync" disabled={showDetails}
-          >
-            Resync
-            {/* {showDetails ? 'Hide Details' : 'Resync'} */}
-          </Button>
-            // <button>{isLogin ? 'Login' : 'Create Account'}</button>
-          )}
-          {isLoading &&
-
-
-          <Button variant="outlined"
-          type='submit' sx = {{mt:20}}
-          className={data_classes.toggle} name="Resync" disabled={true}
-        >
-          Resyncing..
-          {/* {showDetails ? 'Hide Details' : 'Resync'} */}
-        </Button>
-          }
-
-
-
-
-
-
-
-
-            </Box>
-
-
-
-
-
-
-          </Grid>
-        </Grid>
-      </form>
       </Grid>
+
       {showDetails && <div> <Card>
       <ul><li>{heading_title}</li></ul>
       </Card>
@@ -545,16 +457,16 @@ const AvailableData = (props) => {
       <ul><li><h2>Employee Details:</h2><br></br>{isFiltered ? filtered_employee_details : employee_details}</li></ul>
       </Card></div>}
       {error &&
-            <span style={{ color: 'red' }}>{message}</span>}
-                <ToastContainer position="top-right"
-autoClose={5000}
-hideProgressBar={false}
-newestOnTop={false}
-closeOnClick
-rtl={false}
-pauseOnFocusLoss
-draggable
-pauseOnHover/>
+        <span style={{ color: 'red' }}>{message}</span>}
+          <ToastContainer position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover/>
     </section>
   );
 };

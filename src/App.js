@@ -7,6 +7,7 @@ import AuthPage from './pages/AuthPage';
 import HomePage from './pages/HomePage';
 import AuthContext from './store/auth-context';
 import Details from './components/ScrappedData/Details';
+import EmployeeData from './components/ScrappedData/EmployeeData';
 
 function App() {
   const authCtx = useContext(AuthContext);
@@ -27,9 +28,13 @@ function App() {
           {authCtx.isLoggedIn && <UserProfile />}
           {!authCtx.isLoggedIn && <Redirect to='/auth' />}
         </Route>
+        <Route path ='/details/:id'>
+          {authCtx.isLoggedIn && <EmployeeData />}
+        </Route>
         <Route path='*'>
           <Redirect to='/' />
         </Route>
+
       </Switch>
     </Layout>
   );

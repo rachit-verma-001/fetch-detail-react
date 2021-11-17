@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 
 import AuthContext from '../../store/auth-context';
 import classes from './AuthForm.module.css';
-
+import {ngrokUrl } from '../../store/HostUrl';
 
 const AuthForm = () => {
   const history = useHistory();
@@ -13,7 +13,7 @@ const AuthForm = () => {
   const authCtx = useContext(AuthContext);
 
   const [isLogin, setIsLogin] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
 
 
   const [error, setError] = useState(false);
@@ -34,22 +34,22 @@ const AuthForm = () => {
     //   return;
     // }
 
-    setIsLoading(true);
+    // setIsLoading(true);
     let url;
 
     if (isLogin) {
       // url ='https://react-fetch-detail.herokuapp.com/users/sign_in';
-        // url="http://localhost:4000/api/v1/auth/sign_in"
-        url = 'https://c2c8-122-168-240-116.ngrok.io/api/v1/users/sign_in'
+        // url=`${ngrokUrl}/api/v1/auth/sign_in"
+        url = `${ngrokUrl}/api/v1/users/sign_in`
       } else {
         // url ='https://react-fetch-detail.herokuapp.com/users';
-        // url="http://localhost:4000/api/v1/auth"
-      url = 'https://c2c8-122-168-240-116.ngrok.io/api/v1/users'
+        // url=`${ngrokUrl}/api/v1/auth"
+      url = `${ngrokUrl}/api/v1/users`
     }
 
     // if (url === "https://react-fetch-detail.herokuapp.com/users")
-    if (url === "https://c2c8-122-168-240-116.ngrok.io/api/v1/users")
-    // if (url === "http://localhost:4000/api/v1/auth")
+    if (url === `${ngrokUrl}/api/v1/users`)
+    // if (url === "http://460b-157-47-214-197.ngrok.io/api/v1/auth")
 
     {
       fetch(url, {
@@ -67,7 +67,7 @@ const AuthForm = () => {
         },
       })
       .then((res) => {
-        setIsLoading(false);
+        // setIsLoading(false);
         if (res.ok) {
           return res.json();
         } else {
@@ -100,7 +100,7 @@ const AuthForm = () => {
       },
     })
       .then((res) => {
-        setIsLoading(false);
+        // setIsLoading(false);
         if (res.ok) {
           return res.json();
         } else {
@@ -144,11 +144,11 @@ const AuthForm = () => {
           />
         </div>
         <div className={classes.actions}>
-          {!isLoading && (
+          { (
             // <button>{isLogin ? 'Login' : 'Create Account'}</button>
             <button>{isLogin ? 'Login' : 'Create Account'}</button>
           )}
-          {isLoading && <p>Sending request...</p>}
+          {/* {isLoading && <p>Sending request...</p>} */}
           <button
             type='button'
             className={classes.toggle}
