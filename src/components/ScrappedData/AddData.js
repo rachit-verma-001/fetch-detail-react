@@ -1,98 +1,23 @@
-import { Link } from 'react-router-dom';
+
 import { useTable, useFilters, useGlobalFilter, useAsyncDebounce } from 'react-table'
 import 'bootstrap/dist/css/bootstrap.min.css';
 // import { useEffect, useCallback } from 'react';
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import Button from '@material-ui/core/Button';
-// import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid';
 import Box from '@material-ui/core/Box';
 import Input from '@mui/material/Input';
 import 'react-toastify/dist/ReactToastify.css';
-// import { styled } from '@mui/material/styles';
-import Paper from '@mui/material/Paper';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import {Container, Grid} from "@material-ui/core";
 import { useHistory } from "react-router-dom";
-import SearchIcon from '@mui/icons-material/Search';
-import InputBase from '@mui/material/InputBase';
-import { styled, alpha } from '@mui/material/styles';
-import TableCell, { tableCellClasses } from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
 import DatePicker from '@mui/lab/DatePicker';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import TextField from '@mui/material/TextField';
-import { localUrl, ngrokUrl } from '../../store/HostUrl';
-
-const Item = styled(Paper)(({ theme }) => ({
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  color: theme.palette.text.secondary,
-}));
-
-const Search = styled('div')(({ theme }) => ({
-  position: 'relative',
-  borderRadius: theme.shape.borderRadius,
-  backgroundColor: alpha(theme.palette.common.white, 0.15),
-  '&:hover': {
-    backgroundColor: alpha(theme.palette.common.white, 0.25),
-  },
-  marginRight: theme.spacing(2),
-  marginLeft: 0,
-  width: '100%',
-  [theme.breakpoints.up('sm')]: {
-    marginLeft: theme.spacing(3),
-    width: 'auto',
-  },
-}));
+import { ngrokUrl } from '../../store/HostUrl';
 
 
-const SearchIconWrapper = styled('div')(({ theme }) => ({
-  padding: theme.spacing(0, 2),
-  height: '100%',
-  position: 'absolute',
-  pointerEvents: 'none',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-}));
-
-
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: 'inherit',
-  '& .MuiInputBase-input': {
-    padding: theme.spacing(1, 1, 1, 0),
-    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create('width'),
-    width: '100%',
-    [theme.breakpoints.up('md')]: {
-      width: '20ch',
-    },
-  },
-}));
-
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  '&:nth-of-type(odd)': {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  '&:last-child td, &:last-child th': {
-    border: 0,
-  },
-}));
 
 
 const ariaLabel = { 'aria-label': 'description' };
@@ -275,16 +200,12 @@ function FilterTableComponent() {
         []
     )
 
-    const [isLoading, setIsLoading] = useState(false);
-    const [isFetched, setIsFetched] = useState(false);
+    // const [isFetched, setIsFetched] = useState(false);
     const [url, setUrl] = useState('');
     const [userData, setUserData] = useState([]);
     const [name, setName] = useState('');
     const [type, setType] = useState('');
-    const [foundationYear, setFoundationYear] = useState('');
     const [count, setCount] = useState(0);
-    const[filterCall, setFilterCall] = useState(false);
-    const [resyncing, setResyncing] = useState(false);
 
     const [value, setValue] = useState(new Date());
 
@@ -394,7 +315,7 @@ function FilterTableComponent() {
           // setIsLoading(false);
           console.log("String");
           console.log(response);
-          if (response.data.success == false)
+          if (response.data.success === false)
           {
             toast.error(response.data.message,  {
               position: "top-right",
@@ -421,8 +342,8 @@ function FilterTableComponent() {
             })
 
           // userData.push(response.data.company)
-          setIsFetched(true);
-          setFilterCall(false);
+          // setIsFetched(true);
+          // setFilterCall(false);
           // setIsFiltered(false);
           // setShowDetails(true);
         }
@@ -451,7 +372,7 @@ function FilterTableComponent() {
     const resyncCompanyDetail = (id) => {
       const axios = require('axios').default;
 
-      setResyncing(true);
+      // setResyncing(true);
 
       axios.get(`${ngrokUrl}/api/v1/resync?company_id=${id}`, {
         headers:{
@@ -460,7 +381,7 @@ function FilterTableComponent() {
         },
       }).then(function(response){
         if (response.data.success === true){
-          setResyncing(false);
+          // setResyncing(false);
           toast.success("Resync Sucess",{
             position: "top-right",
           autoClose: 5000,
@@ -472,7 +393,7 @@ function FilterTableComponent() {
           })
         }
         else{
-          setResyncing(false);
+          // setResyncing(false);
       toast.error(response.data.message,  {
         position: "top-right",
       autoClose: 5000,

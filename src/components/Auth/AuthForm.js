@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 
 import AuthContext from '../../store/auth-context';
 import classes from './AuthForm.module.css';
-import { localUrl, ngrokUrl } from '../../store/HostUrl';
+import {ngrokUrl } from '../../store/HostUrl';
 
 const AuthForm = () => {
   const history = useHistory();
@@ -13,7 +13,7 @@ const AuthForm = () => {
   const authCtx = useContext(AuthContext);
 
   const [isLogin, setIsLogin] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
 
 
   const [error, setError] = useState(false);
@@ -34,7 +34,7 @@ const AuthForm = () => {
     //   return;
     // }
 
-    setIsLoading(true);
+    // setIsLoading(true);
     let url;
 
     if (isLogin) {
@@ -67,7 +67,7 @@ const AuthForm = () => {
         },
       })
       .then((res) => {
-        setIsLoading(false);
+        // setIsLoading(false);
         if (res.ok) {
           return res.json();
         } else {
@@ -100,7 +100,7 @@ const AuthForm = () => {
       },
     })
       .then((res) => {
-        setIsLoading(false);
+        // setIsLoading(false);
         if (res.ok) {
           return res.json();
         } else {

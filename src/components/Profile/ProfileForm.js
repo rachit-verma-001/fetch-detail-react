@@ -3,7 +3,7 @@ import { useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 // import AuthContext from '../../store/auth-context';
 import classes from './ProfileForm.module.css';
-import { localUrl, ngrokUrl } from '../../store/HostUrl';
+import { ngrokUrl } from '../../store/HostUrl';
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
