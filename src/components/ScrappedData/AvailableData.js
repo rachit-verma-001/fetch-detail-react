@@ -140,7 +140,7 @@ const AvailableData = (props) => {
     const axios = require('axios').default;
 
     try {
-      axios.get('https://460b-157-47-214-197.ngrok.io/api/v1/search', {
+      axios.get(`${ngrokUrl}/api/v1/search`, {
         params: {
           first_name: firstName,
           last_name:lastName,
@@ -227,11 +227,11 @@ const AvailableData = (props) => {
     let sent_url;
     event.preventDefault();
     if (event.nativeEvent.submitter.name === "Fetch"){
-      sent_url = "https://460b-157-47-214-197.ngrok.io/api/v1/company_profile"
+      sent_url = `${ngrokUrl}/api/v1/company_profile`
     }
     else{
       setIsLoading(true);
-      sent_url = "https://460b-157-47-214-197.ngrok.io/api/v1/resync"
+      sent_url = `${ngrokUrl}/api/v1/resync`
       // sent_url = "http://localhost:4000/api/v1/company_profile"
 
     }
@@ -239,7 +239,6 @@ const AvailableData = (props) => {
 
     // if (!isFetched){
       if(!showDetails){
-      try {
         axios.get(sent_url, {
           params: {
             company_name: name,
@@ -276,34 +275,6 @@ const AvailableData = (props) => {
           setShowDetails(true);}
           setError(false);
         })
-        .catch(function (error) {
-          setIsLoading(false);
-          console.log(error);
-          toast.error("No Such Company Details Present",  {
-            position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          });
-          // alert(error);
-        })
-      } catch (error) {
-        setIsLoading(false);
-        // alert(error)
-        console.error(error);
-        toast.error("No Such Company Details Present",  {
-          position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        });
-      }
 
     }
     else

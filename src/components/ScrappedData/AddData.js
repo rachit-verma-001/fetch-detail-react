@@ -25,6 +25,7 @@ import DatePicker from '@mui/lab/DatePicker';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import TextField from '@mui/material/TextField';
+import { localUrl, ngrokUrl } from '../../store/HostUrl';
 
 const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
@@ -289,7 +290,7 @@ function FilterTableComponent() {
     const destroyCompanyDetail = (id) => {
       const axios = require('axios').default;
 
-      axios.delete(`http://localhost:4000/api/v1/companies/${id}`, {
+      axios.delete(`${ngrokUrl}/api/v1/companies/${id}`, {
         headers:{
           'X-USER-TOKEN': localStorage.getItem('token'),
           "X-USER-EMAIL":localStorage.getItem('email')
@@ -307,7 +308,7 @@ function FilterTableComponent() {
           // progress: undefined,
           // })
           // const axios = require('axios').default;
-          axios.get("http://localhost:4000/api/v1/companies", {
+          axios.get(`${ngrokUrl}/api/v1/companies`, {
             headers:{
               'X-USER-TOKEN': localStorage.getItem('token'),
               "X-USER-EMAIL":localStorage.getItem('email')
@@ -345,7 +346,7 @@ function FilterTableComponent() {
 
     useEffect(() => {
       const axios = require('axios').default;
-      axios.get("http://localhost:4000/api/v1/companies", {
+      axios.get(`${ngrokUrl}/api/v1/companies`, {
         headers:{
           'X-USER-TOKEN': localStorage.getItem('token'),
           "X-USER-EMAIL":localStorage.getItem('email')
@@ -386,7 +387,7 @@ function FilterTableComponent() {
           foundation_year:value
         }
 
-        axios.post("http://localhost:4000/api/v1/companies",data, {
+        axios.post(`${ngrokUrl}/api/v1/companies`,data, {
             headers: headers
           }).then(function (response) {
           setIsLoading(false);
@@ -406,7 +407,7 @@ function FilterTableComponent() {
           }
           else{
           // setUserData(response.data)
-            axios.get("http://localhost:4000/api/v1/companies", {
+            axios.get(`${ngrokUrl}/api/v1/companies`, {
               headers: headers
             }).then(function(response){
               if (response.data.success === true){
@@ -433,21 +434,6 @@ function FilterTableComponent() {
         }
           // setError(false);
         })
-        .catch(function (error) {
-          setIsLoading(false);
-          console.log(error);
-          toast.error("No Such Company Details Present",  {
-            position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          });
-          setFilterCall(false);
-          alert(error);
-        })
 
 
     };
@@ -462,7 +448,7 @@ function FilterTableComponent() {
 
       setResyncing(true);
 
-      axios.get(`http://localhost:4000/api/v1/resync?company_id=${id}`, {
+      axios.get(`${ngrokUrl}/api/v1/resync?company_id=${id}`, {
         headers:{
           'X-USER-TOKEN': localStorage.getItem('token'),
           "X-USER-EMAIL":localStorage.getItem('email')

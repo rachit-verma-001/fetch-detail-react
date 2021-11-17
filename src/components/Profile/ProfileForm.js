@@ -3,6 +3,7 @@ import { useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 // import AuthContext from '../../store/auth-context';
 import classes from './ProfileForm.module.css';
+import { localUrl, ngrokUrl } from '../../store/HostUrl';
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -23,7 +24,7 @@ const ProfileForm = () => {
       "X-USER-EMAIL":localStorage.getItem('email')
     };
     const axios = require('axios').default;
-    axios.put('https://460b-157-47-214-197.ngrok.io/api/v1/change_password', password, { headers })
+    axios.put(`${ngrokUrl}/api/v1/change_password`, password, { headers })
     .then((responseData) => { console.log(responseData);
         toast.success("Password updated successfully",  {
           position: "top-right",

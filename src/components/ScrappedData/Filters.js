@@ -5,7 +5,7 @@ import { styled, alpha } from '@mui/material/styles';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
-
+import { localUrl, ngrokUrl } from '../../store/HostUrl';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -98,7 +98,7 @@ export default function Filters() {
     const axios = require('axios').default;
 
     try {
-      axios.get('https://460b-157-47-214-197.ngrok.io/api/v1/search', {
+      axios.get(`${ngrokUrl}/api/v1/search`, {
         params: {
           first_name: firstName,
           last_name:lastName,

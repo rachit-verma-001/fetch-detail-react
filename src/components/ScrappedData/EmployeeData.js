@@ -14,7 +14,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import InputBase from '@mui/material/InputBase';
 import ButtonBase from '@mui/material/ButtonBase';
 import DropDownFilter from "./DropDownFilter"
-
+import { localUrl, ngrokUrl } from '../../store/HostUrl';
 
 
 
@@ -110,7 +110,7 @@ const EmployeeData = (props) => {
   useEffect(() => {
       const axios = require('axios').default;
       try {
-        axios.get(`https://460b-157-47-214-197.ngrok.io/api/v1/companies/${id}`, {
+        axios.get(`${ngrokUrl}/api/v1/companies/${id}`, {
           headers:{
             'X-USER-TOKEN': localStorage.getItem('token'),
             "X-USER-EMAIL":localStorage.getItem('email')
@@ -238,8 +238,8 @@ const EmployeeData = (props) => {
       <ul><li>{heading_title}</li></ul>
       </Card>
 
-      
-      <Card> 
+
+      <Card>
       <DropDownFilter/>
       </Card>
       <Card>

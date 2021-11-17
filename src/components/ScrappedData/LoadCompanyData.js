@@ -20,7 +20,7 @@ import { useHistory } from "react-router-dom";
 import SearchIcon from '@mui/icons-material/Search';
 import InputBase from '@mui/material/InputBase';
 import { styled, alpha } from '@mui/material/styles';
-
+import { localUrl, ngrokUrl } from '../../store/HostUrl';
 
 import { useEffect, useCallback } from 'react';
 
@@ -112,7 +112,7 @@ const EmployeeData = (props) => {
   useEffect(() => {
     const axios = require('axios').default;
     try {
-      axios.get("https://460b-157-47-214-197.ngrok.io/api/v1/list", {
+      axios.get(`${ngrokUrl}/api/v1/list`, {
         headers:{
           'X-USER-TOKEN': localStorage.getItem('token'),
           "X-USER-EMAIL":localStorage.getItem('email')
