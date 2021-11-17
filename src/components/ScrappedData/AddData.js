@@ -330,7 +330,6 @@ function FilterTableComponent() {
           //   // alert(response.data.message)
           }
           else{
-          setUserData(response.data)
             axios.get(`${ngrokUrl}/api/v1/companies`, {
               headers: headers
             }
