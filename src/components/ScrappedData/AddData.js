@@ -1,17 +1,14 @@
-import { useState} from 'react';
-import * as React from 'react';
+import { Link } from 'react-router-dom';
+import { useTable, useFilters, useGlobalFilter, useAsyncDebounce } from 'react-table'
+import 'bootstrap/dist/css/bootstrap.min.css';
+// import { useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Button from '@material-ui/core/Button';
 // import Grid from '@mui/material/Grid';
 import Box from '@material-ui/core/Box';
 import Input from '@mui/material/Input';
 import 'react-toastify/dist/ReactToastify.css';
 // import { styled } from '@mui/material/styles';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell, { tableCellClasses } from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -20,7 +17,14 @@ import { useHistory } from "react-router-dom";
 import SearchIcon from '@mui/icons-material/Search';
 import InputBase from '@mui/material/InputBase';
 import { styled, alpha } from '@mui/material/styles';
-// import LoadCompanyData from './LoadCompanyData'
+import TableCell, { tableCellClasses } from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import DatePicker from '@mui/lab/DatePicker';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import TextField from '@mui/material/TextField';
 
 const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
@@ -56,8 +60,6 @@ const SearchIconWrapper = styled('div')(({ theme }) => ({
 }));
 
 
-
-
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
   color: 'inherit',
   '& .MuiInputBase-input': {
@@ -70,9 +72,6 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     },
   },
 }));
-
-
-
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -98,64 +97,301 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 const ariaLabel = { 'aria-label': 'description' };
 
 
+// Define a default UI for filtering
+function GlobalFilter({
+    preGlobalFilteredRows,
+    globalFilter,
+    setGlobalFilter,
+}) {
+    const count = preGlobalFilteredRows.length
+    const [value, setValue] = React.useState(globalFilter)
+    const onChange = useAsyncDebounce(value => {
+        setGlobalFilter(value || undefined)
+    }, 200)
+
+    return (
+        <span style={{marginLeft:"13px"}}>
+            Search:{' '}
+            <input
+            style={{width:"17%", marginLeft:"12px"}}
+                className="form-control"
+                value={value || ""}
+                onChange={e => {
+                    setValue(e.target.value);
+                    onChange(e.target.value);
+                }}
+                placeholder={`${count} records...`}
+            />
+        </span>
+    )
+}
+
+function DefaultColumnFilter({
+    column: { filterValue, preFilteredRows, setFilter },
+}) {
+    const count = preFilteredRows.length
+
+    return (
+        <input
+            className="form-control"
+            value={filterValue || ''}
+            onChange={e => {
+                setFilter(e.target.value || undefined)
+            }}
+            placeholder={`Search ${count} records...`}
+        />
+    )
+}
+
+function Table({ columns, data }) {
+
+    const defaultColumn = React.useMemo(
+        () => ({
+            // Default Filter UI
+            Filter: DefaultColumnFilter,
+        }),
+        []
+    )
+    const {
+        getTableProps,
+        getTableBodyProps,
+        headerGroups,
+        rows,
+        prepareRow,
+        state,
+        preGlobalFilteredRows,
+        setGlobalFilter,
+    } = useTable(
+        {
+            columns,
+            data,
+            defaultColumn,
+        },
+        useFilters,
+        useGlobalFilter
+    )
+
+    return (
+        <div style={{marginTop:"67px"}}>
+            <GlobalFilter
+                preGlobalFilteredRows={preGlobalFilteredRows}
+                globalFilter={state.globalFilter}
+                setGlobalFilter={setGlobalFilter}
+            />
+            <table style={{marginTop:"19px"}} className="table" {...getTableProps()}>
+                <thead>
+                    {headerGroups.map(headerGroup => (
+                        <tr {...headerGroup.getHeaderGroupProps()}>
+                            {headerGroup.headers.map(column => (
+                                <th {...column.getHeaderProps()}>
+                                    {column.render('Header')}
+                                    {/* Render the columns filter UI */}
+                                    <div>{column.canFilter ? column.render('Filter') : null}</div>
+                                </th>
+                            ))}
+                        </tr>
+                    ))}
+                </thead>
+                <tbody {...getTableBodyProps()}>
+                    {rows.map((row, i) => {
+                        prepareRow(row)
+                        return (
+                            <tr {...row.getRowProps()}>
+                                {row.cells.map(cell => {
+                                    return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                                })}
+                            </tr>
+                        )
+                    })}
+                </tbody>
+            </table>
+            <br />
+          </div>
+    )
+}
 
 
 
-const AddData = (props) => {
+function FilterTableComponent() {
+    const columns = React.useMemo(
+        () => [
+                    {
+                        Header: 'Name',
+                        accessor: 'name',
+                    },
+                    {
+                        Header: 'Type',
+                        accessor: 'company_type'
+                    },
+                   {
+                        Header: 'Url',
+                        accessor: 'url'
+                    },
+                    {
+                        Header: 'Foundation Year',
+                        accessor: 'foundation_year'
+                    },
+                    {
+                        filterable: false,
+                        Header: 'Details',
+                        accessor: 'link',
+                        disableFilters:true,
+                        Cell: ({ row }) =>
+                        <Button variant='outlined'
+                        type='submit' sx = {{mt:20}}
+                        name= {row.original.id} onClick={ () => fetchCompanyDetail(row.original.id)}
+                      > Fetch Details</Button>
+                    },
 
-  const history = useHistory();
-  const [userData, setUserData] = useState([]);
-  const [url, setUrl] = useState('');
-  const [name, setName] = useState('');
-  const [type, setType] = useState('');
-  const [foundationYear, setFoundationYear] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [isFetched, setIsFetched] = useState(false);
+                    {
+                      filterable: false,
+                      disableFilters:true,
+                      Header: 'Sync',
+                      accessor: 'link2',
+                      Cell: ({ row }) =>
+                      <Button variant='outlined'
+                        type='submit' sx = {{mt:20}}
+                        // disabled = {resyncing}
+                        name= {row.original.id} onClick={ () => resyncCompanyDetail(row.original.id)}
+                      >
+                        {/* {resyncing ? "Resyncing" : "Resync"} */}
+                        Resync
+                        </Button>
+                  },
+                  {
+                    filterable: false,
+                    disableFilters:true,
+                    Header: 'Delete',
+                    accessor: 'link3',
+                    Cell: ({ row }) =>
+                    <Button variant='outlined'
+                    type='submit' sx = {{mt:20}}
+                    name= {row.original.id} onClick={ () => destroyCompanyDetail(row.original.id)}
+                  > Destroy</Button>
+                },
+        ],
+        []
+    )
 
-  const[filterCall, setFilterCall] = useState(false);
-  let table_details;
-  let filter_table;
-  const [companyDetail, setCompanyDetail] = useState({});
-  const fetchCompanyDetail =(id) =>{
-    console.log(id)
-    history.push(`/details/${id}`)
+    const [isLoading, setIsLoading] = useState(false);
+    const [isFetched, setIsFetched] = useState(false);
+    const [url, setUrl] = useState('');
+    const [userData, setUserData] = useState([]);
+    const [name, setName] = useState('');
+    const [type, setType] = useState('');
+    const [foundationYear, setFoundationYear] = useState('');
+    const [count, setCount] = useState(0);
+    const[filterCall, setFilterCall] = useState(false);
+    const [resyncing, setResyncing] = useState(false);
 
-  }
+    const [value, setValue] = useState(new Date());
 
-  const [companyName, setCompanyName] = useState();
+    const destroyCompanyDetail = (id) => {
+      const axios = require('axios').default;
 
-  const[filteredCompany, setFilteredCompany] = useState([]);
+      axios.delete(`http://localhost:4000/api/v1/companies/${id}`, {
+        headers:{
+          'X-USER-TOKEN': localStorage.getItem('token'),
+          "X-USER-EMAIL":localStorage.getItem('email')
+        },
+      }).then(function(response){
+        if (response.data.success === true){
+          setCount(count+1);
+          // toast.success("Delete Sucess",{
+          //   position: "top-right",
+          // autoClose: 5000,
+          // hideProgressBar: false,
+          // closeOnClick: true,
+          // pauseOnHover: true,
+          // draggable: true,
+          // progress: undefined,
+          // })
+          // const axios = require('axios').default;
+          axios.get("http://localhost:4000/api/v1/companies", {
+            headers:{
+              'X-USER-TOKEN': localStorage.getItem('token'),
+              "X-USER-EMAIL":localStorage.getItem('email')
+            }
+          }).then(function(response){
+            if (response.data.success === true){
+              setUserData(response.data.companies);
+            }
+            else{
+          // toast.error(response.data.message,  {
+          //   position: "top-right",
+          // autoClose: 5000,
+          // hideProgressBar: false,
+          // closeOnClick: true,
+          // pauseOnHover: true,
+          // draggable: true,
+          // progress: undefined,
+          // });
+            }
+          })
+        }
+        else{
+      toast.error(response.data.message,  {
+        position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      });
+        }
+      })
+    }
 
-  const companyNameChangeHandler = (event) => {
-    setCompanyName(event.target.value);
+    useEffect(() => {
+      const axios = require('axios').default;
+      axios.get("http://localhost:4000/api/v1/companies", {
+        headers:{
+          'X-USER-TOKEN': localStorage.getItem('token'),
+          "X-USER-EMAIL":localStorage.getItem('email')
+        }
+      }).then(function(response){
+        if (response.data.success === true){
+          setUserData(response.data.companies);
+        }
+        else{
+      toast.error(response.data.message,  {
+        position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      });
+        }
+      })
+  },[count]);
 
 
-    const axios = require('axios').default;
-    if (event.target.value.length > 3)
-    {
-      try {
-        axios.get('https://460b-157-47-214-197.ngrok.io/api/v1/search', {
-          params: {
-            company_name: companyName
-          },
-          headers:{
-            'X-USER-TOKEN': localStorage.getItem('token'),
-            "X-USER-EMAIL":localStorage.getItem('email')
-          }
-        })
-        .then(function (response) {
-          if (response.data.success === true)
+    const switchDetailModeHandler = async (event) => {
+      // let sent_url;
+      event.preventDefault();
+      const axios = require('axios').default;
+
+        const headers = {
+          'X-USER-TOKEN': localStorage.getItem('token'),
+          "X-USER-EMAIL":localStorage.getItem('email')
+        }
+
+        const data = {
+          name:name,
+          company_type:type,
+          url:url,
+          foundation_year:value
+        }
+
+        axios.post("http://localhost:4000/api/v1/companies",data, {
+            headers: headers
+          }).then(function (response) {
+          setIsLoading(false);
+          if (response.data.success === false)
           {
-            // dataFiltered = response.data;
-            setFilterCall(true);
-            setIsFetched(false);
-            setFilteredCompany(response.data);
-            console.log(filteredCompany);
-            console.log(response.data);
-            // setUserData(response.data)
-          }
-          else{
-            // alert(response.data.message)
             toast.error(response.data.message,  {
               position: "top-right",
             autoClose: 5000,
@@ -166,50 +402,41 @@ const AddData = (props) => {
             progress: undefined,
             });
             setFilterCall(false);
-            console.log(response.data.message)
-            // setIsFiltered(false)
+            // alert(response.data.message)
           }
+          else{
+          // setUserData(response.data)
+            axios.get("http://localhost:4000/api/v1/companies", {
+              headers: headers
+            }).then(function(response){
+              if (response.data.success === true){
+                setUserData(response.data.companies);
+              }
+              else{
+            toast.error(response.data.message,  {
+              position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            });
+              }
+            })
 
+          // userData.push(response.data.company)
+          setIsFetched(true);
+          setFilterCall(false);
+          // setIsFiltered(false);
+          // setShowDetails(true);
+        }
+          // setError(false);
         })
-      } catch (error) {
-        console.error(error);
-        toast.error(error,  {
-          position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        });
-        setFilterCall(false);
-        alert(error);
-      }
-    }
-  };
-
-  const switchDetailModeHandler = async (event) => {
-    // let sent_url;
-    event.preventDefault();
-    const axios = require('axios').default;
-
-    try {
-      const headers = {
-        'X-USER-TOKEN': localStorage.getItem('token'),
-        "X-USER-EMAIL":localStorage.getItem('email')
-      }
-
-
-      // axios.post("http://localhost:4000/api/v1/companies",data, {
-
-      axios.get("https://460b-157-47-214-197.ngrok.io/api/v1/companies/108", {
-          headers: headers
-        }).then(function (response) {
-        setIsLoading(false);
-        console.log(response)
-        if (response.data.success === false)
-        {
-          toast.error(response.data.message,  {
+        .catch(function (error) {
+          setIsLoading(false);
+          console.log(error);
+          toast.error("No Such Company Details Present",  {
             position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -219,39 +446,43 @@ const AddData = (props) => {
           progress: undefined,
           });
           setFilterCall(false);
-          // alert(response.data.message)
+          alert(error);
+        })
+
+
+    };
+
+    const history = useHistory();
+    const fetchCompanyDetail =(id) =>{
+      console.log(id)
+      history.push(`/details/${id}`)
+    }
+    const resyncCompanyDetail = (id) => {
+      const axios = require('axios').default;
+
+      setResyncing(true);
+
+      axios.get(`http://localhost:4000/api/v1/resync?company_id=${id}`, {
+        headers:{
+          'X-USER-TOKEN': localStorage.getItem('token'),
+          "X-USER-EMAIL":localStorage.getItem('email')
+        },
+      }).then(function(response){
+        if (response.data.success === true){
+          setResyncing(false);
+          toast.success("Resync Sucess",{
+            position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          })
         }
         else{
-
-        // setUserData(response.data)
-        userData.push(response.data.company)
-        setIsFetched(true);
-        setFilterCall(false);
-        // setIsFiltered(false);
-        // setShowDetails(true);
-      }
-        // setError(false);
-      })
-      .catch(function (error) {
-        setIsLoading(false);
-        console.log(error);
-        toast.error("No Such Company Details Present",  {
-          position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        });
-        setFilterCall(false);
-        alert(error);
-      })
-    } catch (error) {
-      setIsLoading(false);
-      // alert(error)
-      console.error(error);
-      toast.error("No Such Company Details Present",  {
+          setResyncing(false);
+      toast.error(response.data.message,  {
         position: "top-right",
       autoClose: 5000,
       hideProgressBar: false,
@@ -260,128 +491,12 @@ const AddData = (props) => {
       draggable: true,
       progress: undefined,
       });
-      setFilterCall(false);
+        }
+      })
     }
 
-  };
-
-
-  if(filterCall)
-  {
-
-    filter_table =(
-      <Container maxWidth="lg">
-      <Grid container>
-      <Grid item xs={12}>
-        <TableContainer component={Paper} >
-            <Table sx={{ width: 776, marginTop:10, }} aria-label="customized table">
-              <TableHead>
-                <TableRow>
-                  <StyledTableCell>Name</StyledTableCell>
-                  <StyledTableCell align="right">Type</StyledTableCell>
-                  <StyledTableCell align="right">Url</StyledTableCell>
-                  <StyledTableCell align="right">Foundation Year</StyledTableCell>
-                  <StyledTableCell align="right">Details</StyledTableCell>
-                  <StyledTableCell align="right">Resync</StyledTableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                { filteredCompany.length > 0 && filteredCompany.map((company) => (
-                  <StyledTableRow key={company.name}>
-                    <StyledTableCell component="th" scope="row">
-                      {company.name}
-                    </StyledTableCell>
-                    <StyledTableCell align="right">{company.company_type}</StyledTableCell>
-                    <StyledTableCell align="right">{company.url}</StyledTableCell>
-                    <StyledTableCell align="right">{company.foundation_year}</StyledTableCell>
-                    <StyledTableCell align="right">
-                      <Button variant='outlined'
-                        type='submit' sx = {{mt:20}}
-                        name= {company.id} onClick={ () => fetchCompanyDetail(company.id)}
-                      >
-                        {/* {showDetails ? 'Hide Details' : 'Fetch Detais'} */}
-                        Fetch Details
-                      </Button>
-                    </StyledTableCell>
-                    <StyledTableCell align="right">
-                      <Button variant='outlined'
-                        type='submit' sx = {{mt:20}}
-                        name= {company.id} onClick={ () => fetchCompanyDetail(company.id)}
-                      >
-                        {/* {showDetails ? 'Hide Details' : 'Fetch Detais'} */}
-                        Resync
-                      </Button>
-                    </StyledTableCell>
-                  </StyledTableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-      </Grid>
-      </Grid>
-      </Container>)
-
-  };
-
-
-  if (isFetched)
-  {
-    table_details =(
-      <Container maxWidth="lg">
-      <Grid container>
-      <Grid item xs={12}>
-        <TableContainer component={Paper} >
-            <Table sx={{ width: 776, marginTop:10, }} aria-label="customized table">
-              <TableHead>
-                <TableRow>
-                  <StyledTableCell>Name</StyledTableCell>
-                  <StyledTableCell align="right">Type</StyledTableCell>
-                  <StyledTableCell align="right">Url</StyledTableCell>
-                  <StyledTableCell align="right">Foundation Year</StyledTableCell>
-                  <StyledTableCell align="right">Details</StyledTableCell>
-                  <StyledTableCell align="right">Resync</StyledTableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {userData.map((company) => (
-                  <StyledTableRow key={company.name}>
-                    <StyledTableCell component="th" scope="row">
-                      {company.name}
-                    </StyledTableCell>
-                    <StyledTableCell align="right">{company.company_type}</StyledTableCell>
-                    <StyledTableCell align="right">{company.url}</StyledTableCell>
-                    <StyledTableCell align="right">{company.foundation_year}</StyledTableCell>
-                    <StyledTableCell align="right">
-                      <Button variant='outlined'
-                        type='submit' sx = {{mt:20}}
-                        name= {company.id} onClick={ () => fetchCompanyDetail(company.id)}
-                      >
-                        {/* {showDetails ? 'Hide Details' : 'Fetch Detais'} */}
-                        Fetch Details
-                      </Button>
-                    </StyledTableCell>
-                    <StyledTableCell align="right">
-                      <Button variant='outlined'
-                        type='submit' sx = {{mt:20}}
-                        name= {company.id} onClick={ () => fetchCompanyDetail(company.id)}
-                      >
-                        {/* {showDetails ? 'Hide Details' : 'Fetch Detais'} */}
-                        Resync
-                      </Button>
-                    </StyledTableCell>
-                  </StyledTableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-      </Grid>
-      </Grid>
-      </Container>)
-  };
-
-  return (
-    <section>
-
+    return (
+      <section>
       <Grid container spacing={0} direction="column" alignItems="center" justifyContent="center">
 
           <form alignItems="center" onSubmit={switchDetailModeHandler} >
@@ -394,9 +509,24 @@ const AddData = (props) => {
             <div >
               <Input placeholder="Type" inputProps={ariaLabel} required onChange={e => setType(e.target.value)}  style={{width:"500px", marginTop:"10px"}}  />
             </div>
-            <div >
-              <Input placeholder="Foundation Year" inputProps={ariaLabel} onChange={e => setFoundationYear(e.target.value)} style={{width:"500px", marginTop:"10px"}}  />
-            </div>
+
+          <div style = {{marginLeft:"-17px"}}>
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <Box m={2}>
+                <DatePicker
+                  inputFormat="yyyy"
+                  views={['year']}
+                  label="Foundation Year"
+                  minDate={new Date('1900-03-01')}
+                  maxDate={new Date('2023-06-01')}
+                  value={value}
+                  onChange={setValue}
+
+                  renderInput={(params) => <TextField {...params} helperText={null} />}
+                />
+              </Box>
+            </LocalizationProvider>
+          </div>
 
             <Grid container spacing={2}>
               <Grid item>
@@ -413,41 +543,10 @@ const AddData = (props) => {
 
             </Grid>
           </form>
-
-          {isFetched && <>
-            <Grid container spacing={2}>
-              <Grid item xs={6}>
-                <Item style={{float:'right', position:'relative', top:'71px', right:'32px', width:'340px', backgroundColor:'#e0e0e03b'}}>
-                  <Search>
-                      <SearchIconWrapper>
-                        <SearchIcon />
-                      </SearchIconWrapper>
-                      <StyledInputBase
-                        placeholder="Company Name"
-                        inputProps={{ 'aria-label': 'search' }} onChange={companyNameChangeHandler}
-                      />
-                  </Search>
-                </Item>
-              </Grid>
-            </Grid>
-            <div>
-          {/* {isFetched ? table_details : <LoadCompanyData />} */}
-          {filterCall ? filter_table : table_details}
-
-          </div></>}
-        </Grid>
-
-        <ToastContainer position="top-right"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover/>
+          </Grid>
+        {< Table columns={columns} data={userData} />}
       </section>
-  )
+    )
 }
 
-export default AddData;
+export default FilterTableComponent;

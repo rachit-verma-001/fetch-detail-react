@@ -78,7 +78,7 @@ export default function DropDownFilter() {
     let countryData = Country.getAllCountries()
     let stateData = State.getAllStates()
    let selectedCountryStates = State.getStatesOfCountry(country)
-   
+
 
 
     const handleChange = (event) => {
@@ -182,6 +182,8 @@ export default function DropDownFilter() {
                             <MenuItem value={10}>HR</MenuItem>
                             <MenuItem value={20}>CEO</MenuItem>
                             <MenuItem value={30}>CXO</MenuItem>
+                            <MenuItem value={30}>CTO</MenuItem>
+                            <MenuItem value={30}>EMPLOYEES</MenuItem>
                         </Select>
                     </FormControl>
                 </Item>
@@ -203,7 +205,7 @@ export default function DropDownFilter() {
                             {countryData.map(count => {
                                 // console.log(count.isoCode)
                                 return <MenuItem value={count.isoCode}>{count.name}</MenuItem>
-                                
+
 
                             })}
 
@@ -225,11 +227,11 @@ export default function DropDownFilter() {
                             onChange={handleChange}
                         >
                             {selectedCountryStates.map(IndivState=>{
-                            
+
                             return <MenuItem value={10}>{IndivState.name}</MenuItem>
 
                             })}
-                            
+
 
                         </Select>
                     </FormControl>
