@@ -140,7 +140,7 @@ const AvailableData = (props) => {
     const axios = require('axios').default;
 
     try {
-      axios.get('http://localhost:4000/api/v1/search', {
+      axios.get('https://460b-157-47-214-197.ngrok.io/api/v1/search', {
         params: {
           first_name: firstName,
           last_name:lastName,
@@ -227,11 +227,11 @@ const AvailableData = (props) => {
     let sent_url;
     event.preventDefault();
     if (event.nativeEvent.submitter.name === "Fetch"){
-      sent_url = "http://localhost:4000/api/v1/company_profile"
+      sent_url = "https://460b-157-47-214-197.ngrok.io/api/v1/company_profile"
     }
     else{
       setIsLoading(true);
-      sent_url = "http://localhost:4000/api/v1/resync"
+      sent_url = "https://460b-157-47-214-197.ngrok.io/api/v1/resync"
       // sent_url = "http://localhost:4000/api/v1/company_profile"
 
     }

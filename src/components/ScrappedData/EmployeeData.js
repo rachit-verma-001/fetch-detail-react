@@ -13,6 +13,7 @@ import { useState} from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 import InputBase from '@mui/material/InputBase';
 import ButtonBase from '@mui/material/ButtonBase';
+import DropDownFilter from "./DropDownFilter"
 
 
 
@@ -109,7 +110,7 @@ const EmployeeData = (props) => {
   useEffect(() => {
       const axios = require('axios').default;
       try {
-        axios.get(`http://localhost:4000/api/v1/companies/${id}`, {
+        axios.get(`https://460b-157-47-214-197.ngrok.io/api/v1/companies/${id}`, {
           headers:{
             'X-USER-TOKEN': localStorage.getItem('token'),
             "X-USER-EMAIL":localStorage.getItem('email')
@@ -235,6 +236,11 @@ const EmployeeData = (props) => {
 
       {showDetails && <div> <Card>
       <ul><li>{heading_title}</li></ul>
+      </Card>
+
+      
+      <Card> 
+      <DropDownFilter/>
       </Card>
       <Card>
         {/* <Filters handleClick = {() => handleButtonClick()}/> */}

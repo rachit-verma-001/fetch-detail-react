@@ -39,17 +39,17 @@ const AuthForm = () => {
 
     if (isLogin) {
       // url ='https://react-fetch-detail.herokuapp.com/users/sign_in';
-        // url="http://localhost:4000/api/v1/auth/sign_in"
-        url = 'http://localhost:4000/api/v1/users/sign_in'
+        // url="https://460b-157-47-214-197.ngrok.io/api/v1/auth/sign_in"
+        url = 'https://460b-157-47-214-197.ngrok.io/api/v1/users/sign_in'
       } else {
         // url ='https://react-fetch-detail.herokuapp.com/users';
-        // url="http://localhost:4000/api/v1/auth"
-      url = 'http://localhost:4000/api/v1/users'
+        // url="https://460b-157-47-214-197.ngrok.io/api/v1/auth"
+      url = 'https://460b-157-47-214-197.ngrok.io/api/v1/users'
     }
 
     // if (url === "https://react-fetch-detail.herokuapp.com/users")
-    if (url === "http://localhost:4000/api/v1/users")
-    // if (url === "http://localhost:4000/api/v1/auth")
+    if (url === "https://460b-157-47-214-197.ngrok.io/api/v1/users")
+    // if (url === "http://460b-157-47-214-197.ngrok.io/api/v1/auth")
 
     {
       fetch(url, {

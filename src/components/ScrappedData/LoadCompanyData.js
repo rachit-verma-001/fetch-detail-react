@@ -112,7 +112,7 @@ const EmployeeData = (props) => {
   useEffect(() => {
     const axios = require('axios').default;
     try {
-      axios.get("http://localhost:4000/api/v1/list", {
+      axios.get("https://460b-157-47-214-197.ngrok.io/api/v1/list", {
         headers:{
           'X-USER-TOKEN': localStorage.getItem('token'),
           "X-USER-EMAIL":localStorage.getItem('email')

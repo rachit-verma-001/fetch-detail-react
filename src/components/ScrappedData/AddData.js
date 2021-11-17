@@ -134,7 +134,7 @@ const AddData = (props) => {
     if (event.target.value.length > 3)
     {
       try {
-        axios.get('http://localhost:4000/api/v1/search', {
+        axios.get('https://460b-157-47-214-197.ngrok.io/api/v1/search', {
           params: {
             company_name: companyName
           },
@@ -202,10 +202,11 @@ const AddData = (props) => {
 
       // axios.post("http://localhost:4000/api/v1/companies",data, {
 
-      axios.get("http://localhost:4000/api/v1/companies/108", {
+      axios.get("https://460b-157-47-214-197.ngrok.io/api/v1/companies/108", {
           headers: headers
         }).then(function (response) {
         setIsLoading(false);
+        console.log(response)
         if (response.data.success === false)
         {
           toast.error(response.data.message,  {

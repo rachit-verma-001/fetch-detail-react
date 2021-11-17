@@ -23,7 +23,7 @@ const ProfileForm = () => {
       "X-USER-EMAIL":localStorage.getItem('email')
     };
     const axios = require('axios').default;
-    axios.put('http://localhost:4000/api/v1/change_password', password, { headers })
+    axios.put('https://460b-157-47-214-197.ngrok.io/api/v1/change_password', password, { headers })
     .then((responseData) => { console.log(responseData);
         toast.success("Password updated successfully",  {
           position: "top-right",
