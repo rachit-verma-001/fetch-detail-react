@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 
 import AuthContext from '../../store/auth-context';
 import classes from './AuthForm.module.css';
-
+import { localUrl, ngrokUrl } from '../../store/HostUrl';
 
 const AuthForm = () => {
   const history = useHistory();
@@ -39,16 +39,16 @@ const AuthForm = () => {
 
     if (isLogin) {
       // url ='https://react-fetch-detail.herokuapp.com/users/sign_in';
-        // url="https://460b-157-47-214-197.ngrok.io/api/v1/auth/sign_in"
-        url = 'https://460b-157-47-214-197.ngrok.io/api/v1/users/sign_in'
+        // url=`${ngrokUrl}/api/v1/auth/sign_in"
+        url = `${ngrokUrl}/api/v1/users/sign_in`
       } else {
         // url ='https://react-fetch-detail.herokuapp.com/users';
-        // url="https://460b-157-47-214-197.ngrok.io/api/v1/auth"
-      url = 'https://460b-157-47-214-197.ngrok.io/api/v1/users'
+        // url=`${ngrokUrl}/api/v1/auth"
+      url = `${ngrokUrl}/api/v1/users`
     }
 
     // if (url === "https://react-fetch-detail.herokuapp.com/users")
-    if (url === "https://460b-157-47-214-197.ngrok.io/api/v1/users")
+    if (url === `${ngrokUrl}/api/v1/users`)
     // if (url === "http://460b-157-47-214-197.ngrok.io/api/v1/auth")
 
     {
@@ -144,11 +144,11 @@ const AuthForm = () => {
           />
         </div>
         <div className={classes.actions}>
-          {!isLoading && (
+          { (
             // <button>{isLogin ? 'Login' : 'Create Account'}</button>
             <button>{isLogin ? 'Login' : 'Create Account'}</button>
           )}
-          {isLoading && <p>Sending request...</p>}
+          {/* {isLoading && <p>Sending request...</p>} */}
           <button
             type='button'
             className={classes.toggle}

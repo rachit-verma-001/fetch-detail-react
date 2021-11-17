@@ -239,6 +239,7 @@ function FilterTableComponent() {
                         disableFilters:true,
                         Cell: ({ row }) =>
                         <Button variant='outlined'
+                        style={{width:"146px"}}
                         type='submit' sx = {{mt:20}}
                         name= {row.original.id} onClick={ () => fetchCompanyDetail(row.original.id)}
                       > Fetch Details</Button>
@@ -298,15 +299,15 @@ function FilterTableComponent() {
       }).then(function(response){
         if (response.data.success === true){
           setCount(count+1);
-          // toast.success("Delete Sucess",{
-          //   position: "top-right",
-          // autoClose: 5000,
-          // hideProgressBar: false,
-          // closeOnClick: true,
-          // pauseOnHover: true,
-          // draggable: true,
-          // progress: undefined,
-          // })
+          toast.success("Delete Sucess",{
+            position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          })
           // const axios = require('axios').default;
           axios.get(`${ngrokUrl}/api/v1/companies`, {
             headers:{
@@ -318,15 +319,15 @@ function FilterTableComponent() {
               setUserData(response.data.companies);
             }
             else{
-          // toast.error(response.data.message,  {
-          //   position: "top-right",
-          // autoClose: 5000,
-          // hideProgressBar: false,
-          // closeOnClick: true,
-          // pauseOnHover: true,
-          // draggable: true,
-          // progress: undefined,
-          // });
+          toast.error(response.data.message,  {
+            position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          });
             }
           })
         }
@@ -370,7 +371,7 @@ function FilterTableComponent() {
   },[count]);
 
 
-    const switchDetailModeHandler = async (event) => {
+    const switchDetailModeHandler = (event) => {
       // let sent_url;
       event.preventDefault();
       const axios = require('axios').default;
@@ -389,9 +390,11 @@ function FilterTableComponent() {
 
         axios.post(`${ngrokUrl}/api/v1/companies`,data, {
             headers: headers
-          }).then(function (response) {
-          setIsLoading(false);
-          if (response.data.success === false)
+          }).then(response => {
+          // setIsLoading(false);
+          console.log("String");
+          console.log(response);
+          if (response.data.success == false)
           {
             toast.error(response.data.message,  {
               position: "top-right",
@@ -402,27 +405,18 @@ function FilterTableComponent() {
             draggable: true,
             progress: undefined,
             });
-            setFilterCall(false);
-            // alert(response.data.message)
+          //   setFilterCall(false);
+          //   // alert(response.data.message)
           }
           else{
-          // setUserData(response.data)
+          setUserData(response.data)
             axios.get(`${ngrokUrl}/api/v1/companies`, {
               headers: headers
-            }).then(function(response){
+            }
+            )
+            .then(function(response){
               if (response.data.success === true){
                 setUserData(response.data.companies);
-              }
-              else{
-            toast.error(response.data.message,  {
-              position: "top-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            });
               }
             })
 
@@ -433,6 +427,17 @@ function FilterTableComponent() {
           // setShowDetails(true);
         }
           // setError(false);
+        }).catch(function (error) {
+          console.log(error);
+          toast.error("Something Went Wrong",  {
+            position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          })
         })
 
 
@@ -498,7 +503,7 @@ function FilterTableComponent() {
 
           <div style = {{marginLeft:"-17px"}}>
             <LocalizationProvider dateAdapter={AdapterDateFns}>
-              <Box m={2}>
+              <Box m={2} >
                 <DatePicker
                   inputFormat="yyyy"
                   views={['year']}
@@ -508,7 +513,7 @@ function FilterTableComponent() {
                   value={value}
                   onChange={setValue}
 
-                  renderInput={(params) => <TextField {...params} helperText={null} />}
+                  renderInput={(params) => <TextField style={{width:"500px"}} {...params} helperText={null} />}
                 />
               </Box>
             </LocalizationProvider>
@@ -530,6 +535,15 @@ function FilterTableComponent() {
             </Grid>
           </form>
           </Grid>
+          <ToastContainer position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover/>
         {< Table columns={columns} data={userData} />}
       </section>
     )
