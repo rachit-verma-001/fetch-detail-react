@@ -17,11 +17,7 @@ import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import TextField from '@mui/material/TextField';
 import { ngrokUrl } from '../../store/HostUrl';
 
-
-
-
 const ariaLabel = { 'aria-label': 'description' };
-
 
 // Define a default UI for filtering
 function GlobalFilter({
@@ -136,9 +132,8 @@ function Table({ columns, data }) {
     )
 }
 
-
-
 function FilterTableComponent() {
+  const [resyncing, setResyncing] = useState(false);
     const columns = React.useMemo(
         () => [
                     {
@@ -178,11 +173,13 @@ function FilterTableComponent() {
                       Cell: ({ row }) =>
                       <Button variant='outlined'
                         type='submit' sx = {{mt:20}}
-                        // disabled = {resyncing}
-                        name= {row.original.id} onClick={ () => resyncCompanyDetail(row.original.id)}
+                        disabled = {resyncing? true:false}
+                        name= {row.original.id}
+                        onClick={ () => resyncCompanyDetail(row.original.id)
+                      }
                       >
-                        {/* {resyncing ? "Resyncing" : "Resync"} */}
-                        Resync
+                        {resyncing ? "Resyncing" : "Resync"}
+                        {/* Resync */}
                         </Button>
                   },
                   {
@@ -369,9 +366,17 @@ function FilterTableComponent() {
       history.push(`/details/${id}`)
     }
     const resyncCompanyDetail = (id) => {
+
+      setResyncing(true);
+
+
+
+      console.log(`before 1st Resync = ${resyncing}`)
+
+
       const axios = require('axios').default;
 
-      // setResyncing(true);
+
 
       axios.get(`${ngrokUrl}/api/v1/resync?company_id=${id}`, {
         headers:{
@@ -380,30 +385,35 @@ function FilterTableComponent() {
         },
       }).then(function(response){
         if (response.data.success === true){
-          // setResyncing(false);
-          toast.success("Resync Sucess",{
-            position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          })
-        }
-        else{
-          // setResyncing(false);
-      toast.error(response.data.message,  {
-        position: "top-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      });
-        }
-      })
+
+          console.log(`after 1st Resync = ${resyncing}`)
+            setResyncing(false);
+
+            console.log(`After Resync Success = ${resyncing}`)
+            toast.success("Resync Sucess",{
+              position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+              })
+          }
+          else{
+            setResyncing(false);
+            console.log(`After Resync not success = ${resyncing}`)
+            toast.error(response.data.message,  {
+          position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        });
+          }
+        })
+
     }
 
     return (
