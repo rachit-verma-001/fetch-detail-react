@@ -115,7 +115,7 @@ let FilterHandler = ()=>{
     let filterFinalEmployees =  []
     let filterFinalFounders =  FoundersDetails.filter(employ=> employ.city.includes(catchedCountry) && employ.city.includes(catchedState) &&employ["city"].includes(city)&&employ.designation.includes(designation) ) 
             
-    if(designation=="Human Resources"){
+    if(designation !=="Employees"){
 
         filterFinalEmployees= EmployeeDetails.filter(employ=> employ.city.includes(catchedCountry) && employ.city.includes(catchedState) &&employ["city"].includes(city)&&employ.designation.includes(designation) )
 
@@ -140,8 +140,13 @@ let FilterHandler = ()=>{
             setDesignation(event.target.value)
         } else if (event.target.name == "State") {
             setState(event.target.value)
+            setCity("")
+
         } else if (event.target.name == "Country") {
             setCountry(event.target.value)
+            setState("")
+            setCity("")
+            
         } else if (event.target.name == "City") {
             setCity(event.target.value)
         }
@@ -227,9 +232,13 @@ let FilterHandler = ()=>{
                             name="Country"
                             onChange={handleChange}
                         >
+                            <MenuItem value={""} > Select</MenuItem>
                             {countryData.map(count => {
                                 // console.log(count.isoCode)
-                                return <MenuItem value={count.isoCode}>{count.name}</MenuItem>
+
+                                                            
+                                return   <MenuItem value={count.isoCode}>{count.name}</MenuItem>
+                                
                             })}
 
                         </Select>
@@ -249,9 +258,14 @@ let FilterHandler = ()=>{
                             name="State"
                             onChange={handleChange}
                         >
+                             <MenuItem value={""}  > Select</MenuItem>
                             {selectedCountryStates.map(IndivState => {
                                 // console.log(IndivState.isoCode)
+
+                                
+                               
                                 return <MenuItem value={IndivState.isoCode}>{IndivState.name}</MenuItem>
+                                 
 
                             })}
                         </Select>
@@ -271,9 +285,13 @@ let FilterHandler = ()=>{
                             name="City"
                             onChange={handleChange}
                         >
+                            <MenuItem value={""} > Select</MenuItem>
                             {selectedCity.map(cities => {
-                           
-                                return <MenuItem value={cities.name}>{cities.name}</MenuItem>
+                                    
+                                
+                                
+                                    return     <MenuItem value={cities.name}>{cities.name}</MenuItem>
+                                
 
                             })}
 
@@ -293,12 +311,16 @@ let FilterHandler = ()=>{
                             label="Designation"
                             name="Designation"
                             onChange={handleChange}
+                            placeHolder = "Select"
                         >
+                            <MenuItem value={""}  > Select</MenuItem>
                             <MenuItem value={"Chief Executive Officer"}>CEO</MenuItem>
                             <MenuItem value={"Founder "}>Founder</MenuItem>
                             <MenuItem value={"CTO"}>CTO</MenuItem>
                             <MenuItem value={"COO"}>COO</MenuItem>   
-                            <MenuItem value={"CXO"}>CXO</MenuItem>                            
+                            <MenuItem value={"CXO"}>CXO</MenuItem>
+                            <MenuItem value={"Employees"}>Employees</MenuItem>   
+                                                     
                             {/* <MenuItem value={"Software Engineer"}>Software Engineer</MenuItem>
                             <MenuItem value={"Developer"}>Developer</MenuItem>
                             <MenuItem value={"Business Development"}>Business Development</MenuItem> */}
