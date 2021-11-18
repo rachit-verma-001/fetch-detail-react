@@ -370,7 +370,15 @@ function FilterTableComponent() {
       setResyncing(true);
 
 
-
+      toast.success("Resync in progress",  {
+        position: "top-right",
+      autoClose: 10000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      })
       console.log(`before 1st Resync = ${resyncing}`)
 
 
@@ -385,6 +393,7 @@ function FilterTableComponent() {
         },
       }).then(function(response){
         if (response.data.success === true){
+
 
           console.log(`after 1st Resync = ${resyncing}`)
             setResyncing(false);
@@ -422,13 +431,13 @@ function FilterTableComponent() {
 
           <form alignItems="center" onSubmit={switchDetailModeHandler} >
             <div >
-              <Input placeholder="Name" inputProps={ariaLabel} onChange={e => setName(e.target.value)} required style={{width:"500px"}}  />
+              <Input placeholder="Company Name *" inputProps={ariaLabel} onChange={e => setName(e.target.value)} required style={{width:"500px"}}  />
             </div>
             <div >
-              <Input placeholder="Url" inputProps={ariaLabel} required onChange={e => setUrl(e.target.value)}   style={{width:"500px", marginTop:"10px"}}  />
+              <Input placeholder="Company Url *" inputProps={ariaLabel} required onChange={e => setUrl(e.target.value)}   style={{width:"500px", marginTop:"10px"}}  />
             </div>
             <div >
-              <Input placeholder="Type" inputProps={ariaLabel} required onChange={e => setType(e.target.value)}  style={{width:"500px", marginTop:"10px"}}  />
+              <Input placeholder="Company Type" inputProps={ariaLabel} required onChange={e => setType(e.target.value)}  style={{width:"500px", marginTop:"10px"}}  />
             </div>
 
           <div style = {{marginLeft:"-17px"}}>
