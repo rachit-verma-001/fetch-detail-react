@@ -127,7 +127,7 @@ const EmployeeData = (props) => {
     );
     // company_name = userData.company_detail.name;
 
-    console.log(userData.employee_details)
+    console.log(userData,"deta")
     employee_details = userData.employee_details.map((user) => (
       <Data user = {user}/>
     ));
@@ -161,6 +161,32 @@ const EmployeeData = (props) => {
     </div>)
   }
 
+  console.log(userData)
+let filteredData =(founderDetails,employeeDetails)=>{
+
+
+  let data = {}
+  
+  data.founders_details = founderDetails
+  data.employee_details = employeeDetails
+  console.log(data.founders_details)
+
+  setUserData({company:userData.company,founders_details:founderDetails,employee_details:employeeDetails })
+
+  console.log(data.founders_details)
+
+  console.log(founderDetails,employeeDetails)
+
+
+  // setUserData(userData.founders_details)
+  // userData.employee_details
+
+}
+
+useEffect(()=>{
+  console.log(userData)
+},[userData])
+
 
 
   return (
@@ -174,10 +200,9 @@ const EmployeeData = (props) => {
       {showDetails && <div> <Card>
       <ul><li>{heading_title}</li></ul>
       </Card>
-
-
-      <Card>
-      <DropDownFilter/>
+      
+      <Card> 
+      <DropDownFilter   userData = {userData}  filteredData={filteredData} />
       </Card>
       <Card>
         {/* <Filters handleClick = {() => handleButtonClick()}/> */}

@@ -63,7 +63,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 export let dataFiltered = null;
 
-export default function DropDownFilter() {
+export default function DropDownFilter(props) {
 
     //   const [firstName, setUserFirstName] = useState();
     //   const[filteredCompany, setFilteredCompany] = useState();
@@ -73,12 +73,62 @@ export default function DropDownFilter() {
     const [designation, setDesignation] = useState('')
     const [state, setState] = useState('')
     const [country, setCountry] = useState('')
-    const [selectedCountry,setSelectedCountry] = useState('')
+    const [selectedCountry, setSelectedCountry] = useState('')
+    const [city, setCity] = useState('')
+    
+
 
     let countryData = Country.getAllCountries()
-    let stateData = State.getAllStates()
-   let selectedCountryStates = State.getStatesOfCountry(country)
+    
+    let selectedCountryStates = State.getStatesOfCountry(country)
+    let selectedCity = City.getCitiesOfState(country, state)
+    console.log(selectedCity)
 
+
+
+let countryMatcher = (iso)=>{
+    let countryCodesMatcher = countryData.filter(item=> item.isoCode == iso)
+        return countryCodesMatcher[0]["name"]
+    
+}
+
+
+let stateMatcher = (iso)=>{
+    let stateCodesMatcher = selectedCountryStates.filter(item=>item.isoCode ==iso)
+         return stateCodesMatcher[0]["name"]
+}
+
+
+
+let FilterHandler = ()=>{
+    let catchedCountry = '';
+    let catchedState=''
+ if(country  && country !== ""){ 
+   catchedCountry = countryMatcher(country)}
+ if(state && state!==""){
+    catchedState= stateMatcher(state)}
+
+
+    let EmployeeDetails = props.userData.employee_details
+    let FoundersDetails = props.userData.founders_details
+  
+    let filterFinalEmployees =  []
+    let filterFinalFounders =  FoundersDetails.filter(employ=> employ.city.includes(catchedCountry) && employ.city.includes(catchedState) &&employ["city"].includes(city)&&employ.designation.includes(designation) ) 
+            
+    if(designation=="Human Resources"){
+
+        filterFinalEmployees= EmployeeDetails.filter(employ=> employ.city.includes(catchedCountry) && employ.city.includes(catchedState) &&employ["city"].includes(city)&&employ.designation.includes(designation) )
+
+    }else{
+        filterFinalEmployees= EmployeeDetails.filter(employ=> employ.city.includes(catchedCountry) && employ.city.includes(catchedState) &&employ["city"].includes(city) )
+    }
+
+        
+    props.filteredData(filterFinalFounders,filterFinalEmployees)
+    console.log(designation)    
+    
+    
+}
 
 
     const handleChange = (event) => {
@@ -92,11 +142,27 @@ export default function DropDownFilter() {
             setState(event.target.value)
         } else if (event.target.name == "Country") {
             setCountry(event.target.value)
+        } else if (event.target.name == "City") {
+            setCity(event.target.value)
         }
 
-
-
     };
+
+
+
+ 
+
+//  let extractedLocations = EmployeeDataLocation.map(employee =>{
+//    let splitLocation =  employee.city.split(",")
+    
+//      let EmployeeCity = splitLocation[0]
+//      let EmployeeState = splitLocation[1]
+//      let EmployeeCountry = splitLocation[2]
+
+//      console.log(EmployeeCity,EmployeeState)
+  
+
+//  })
 
     //   const handleDesignationChange = (event) => {
     //     setDesignation(event.target.value);
@@ -146,49 +212,8 @@ export default function DropDownFilter() {
     return (<>
 
         <Grid container spacing={2}>
-            <Grid item xs={6}>
-                <Item>
-                    <FormControl fullWidth>
-                        <InputLabel id="demo-simple-select-label">Company</InputLabel>
-                        <Select
-                            labelId="demo-simple-select-label"
-                            id="demo-simple-select"
-                            value={company}
-                            label="Company"
-                            name="Company"
 
-                            onChange={handleChange}
-                        >
-                            <MenuItem value={10}>Prtons</MenuItem>
-                            <MenuItem value={20}>Postman</MenuItem>
-                            <MenuItem value={30}>Adobe</MenuItem>
-                        </Select>
-                    </FormControl>
-                </Item>
-            </Grid>
-
-            <Grid item xs={6}>
-                <Item>
-                    <FormControl fullWidth>
-                        <InputLabel id="Designation">Designation</InputLabel>
-                        <Select
-                            labelId="Designation"
-                            id="demo-designation"
-                            value={designation}
-                            label="Designation"
-                            name="Designation"
-                            onChange={handleChange}
-                        >
-                            <MenuItem value={10}>HR</MenuItem>
-                            <MenuItem value={20}>CEO</MenuItem>
-                            <MenuItem value={30}>CXO</MenuItem>
-                            <MenuItem value={30}>CTO</MenuItem>
-                            <MenuItem value={30}>EMPLOYEES</MenuItem>
-                        </Select>
-                    </FormControl>
-                </Item>
-            </Grid>
-
+     
 
             <Grid item xs={6}>
                 <Item>
@@ -205,8 +230,6 @@ export default function DropDownFilter() {
                             {countryData.map(count => {
                                 // console.log(count.isoCode)
                                 return <MenuItem value={count.isoCode}>{count.name}</MenuItem>
-
-
                             })}
 
                         </Select>
@@ -226,27 +249,74 @@ export default function DropDownFilter() {
                             name="State"
                             onChange={handleChange}
                         >
-                            {selectedCountryStates.map(IndivState=>{
-
-                            return <MenuItem value={10}>{IndivState.name}</MenuItem>
+                            {selectedCountryStates.map(IndivState => {
+                                // console.log(IndivState.isoCode)
+                                return <MenuItem value={IndivState.isoCode}>{IndivState.name}</MenuItem>
 
                             })}
+                        </Select>
+                    </FormControl>
+                </Item>
+            </Grid>
 
+            <Grid item xs={6}>
+                <Item>
+                    <FormControl fullWidth>
+                        <InputLabel id="City">City</InputLabel>
+                        <Select
+                            labelId="City"
+                            id="demo-City"
+                            value={city}
+                            label="City"
+                            name="City"
+                            onChange={handleChange}
+                        >
+                            {selectedCity.map(cities => {
+                           
+                                return <MenuItem value={cities.name}>{cities.name}</MenuItem>
+
+                            })}
 
                         </Select>
                     </FormControl>
                 </Item>
             </Grid>
 
+            <Grid item xs={6}>
+                <Item>
+                    <FormControl fullWidth>
+                        <InputLabel id="Designation">Designation</InputLabel>
+                        <Select
+                            labelId="Designation"
+                            id="demo-designation"
+                            value={designation}
+                            label="Designation"
+                            name="Designation"
+                            onChange={handleChange}
+                        >
+                            <MenuItem value={"Chief Executive Officer"}>CEO</MenuItem>
+                            <MenuItem value={"Founder "}>Founder</MenuItem>
+                            <MenuItem value={"CTO"}>CTO</MenuItem>
+                            <MenuItem value={"COO"}>COO</MenuItem>   
+                            <MenuItem value={"CXO"}>CXO</MenuItem>                            
+                            {/* <MenuItem value={"Software Engineer"}>Software Engineer</MenuItem>
+                            <MenuItem value={"Developer"}>Developer</MenuItem>
+                            <MenuItem value={"Business Development"}>Business Development</MenuItem> */}
+                            <MenuItem value={"Human Resources"}>Human Resources</MenuItem>
+                            {/* <MenuItem value={"Designer"}>Designer</MenuItem> */}
+                            
 
 
 
 
-
+                        </Select>
+                    </FormControl>
+                </Item>
+            </Grid>
         </Grid>
 
         <Grid item mt={2} container spacing={0} direction="column" alignItems="center" justifyContent="center" >
-            <Button variant="contained" style={{ width: '240px' }}>Filter</Button>
+            <Button variant="contained"   onClick={FilterHandler } style={{ width: '240px' }}>Filter</Button>
         </Grid>
         <ToastContainer position="top-right"
             autoClose={5000}
