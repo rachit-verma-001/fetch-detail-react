@@ -16,6 +16,7 @@ import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import TextField from '@mui/material/TextField';
 import { ngrokUrl } from '../../store/HostUrl';
+import Select from 'react-select'
 
 const ariaLabel = { 'aria-label': 'description' };
 
@@ -425,6 +426,11 @@ function FilterTableComponent() {
 
     }
 
+    const options = [
+      { value: 'Product Based', label: 'ProductBased' },
+      { value: 'Service Based', label: 'ServiceBased' }
+    ]
+
     return (
       <section>
       <Grid container spacing={0} direction="column" alignItems="center" justifyContent="center">
@@ -437,7 +443,11 @@ function FilterTableComponent() {
               <Input placeholder="Company Url *" inputProps={ariaLabel} required onChange={e => setUrl(e.target.value)}   style={{width:"500px", marginTop:"10px"}}  />
             </div>
             <div >
+
               <Input placeholder="Company Type" inputProps={ariaLabel} required onChange={e => setType(e.target.value)}  style={{width:"500px", marginTop:"10px"}}  />
+
+            {/* <Select placeholder = "Company Type" options={options}  required onChange={e => setType(e.target.value)} /> */}
+
             </div>
 
           <div style = {{marginLeft:"-17px"}}>

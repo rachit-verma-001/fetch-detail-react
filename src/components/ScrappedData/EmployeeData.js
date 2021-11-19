@@ -43,6 +43,7 @@ const EmployeeData = (props) => {
   const [isFetched, setIsFetched] = useState(false);
   const [userData, setUserData] = useState({});
   const [showDetails, setShowDetails] = useState(false);
+  const [ userDataBackup,setUserDataBackup] = useState({})
 
   useEffect(() => {
       const axios = require('axios').default;
@@ -70,6 +71,7 @@ const EmployeeData = (props) => {
           }
           else{
             setUserData(response.data)
+            setUserDataBackup(response.data)
             setIsFetched(true);
             // setIsFiltered(false);
             setShowDetails(true);
@@ -128,6 +130,7 @@ const EmployeeData = (props) => {
     // company_name = userData.company_detail.name;
 
     console.log(userData,"deta")
+
     employee_details = userData.employee_details.map((user) => (
       <Data user = {user}/>
     ));
@@ -192,20 +195,18 @@ useEffect(()=>{
   return (
 
     <section >
-
       <Grid container spacing={0} direction="column" alignItems="center" justifyContent="center">
-
       </Grid>
-
       {showDetails && <div> <Card>
       <ul><li>{heading_title}</li></ul>
       </Card>
       
       <Card> 
-      <DropDownFilter   userData = {userData}  filteredData={filteredData} />
+      <DropDownFilter   userData = {userDataBackup}  filteredData={filteredData} />
       </Card>
-      <Card>
-        {/* <Filters handleClick = {() => handleButtonClick()}/> */}
+     
+     {founders_details.length>0 ? <Card>
+        
         <Grid container spacing={2}>
     {/* <Grid item xs={6}>
       <Item>
@@ -289,11 +290,15 @@ useEffect(()=>{
     <Grid item xs={6} mt={2} spacing={0} direction="column" alignItems="center" justifyContent="center"><Csv/></Grid>
   </Grid> */}
 
+      
       <ul><li><h2>Founders Details:</h2><br></br>{founders_details}</li></ul>
-      </Card>
-      <Card>
+      </Card>:null}
+      
+     {employee_details.length>0 ? <Card>
       <ul><li><h2>Employee Details:</h2><br></br>{employee_details}</li></ul>
-      </Card></div>}
+      </Card>:null}
+      
+      </div>}
       {/* {error &&
         <span style={{ color: 'red' }}>{message}</span>} */}
           <ToastContainer position="top-right"
