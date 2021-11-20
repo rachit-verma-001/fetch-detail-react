@@ -289,33 +289,72 @@ function FilterTableComponent() {
       })
   },[count]);
 
+  const [error, setError] = useState(false);
 
     const switchDetailModeHandler = (event) => {
       // let sent_url;
       event.preventDefault();
-      const axios = require('axios').default;
+      if (value.getFullYear().toString().length < 4)
+      {
+        setError(true)
+      }
+      else
+      {
+        const axios = require('axios').default;
+        setError(false)
+          const headers = {
+            'X-USER-TOKEN': localStorage.getItem('token'),
+            "X-USER-EMAIL":localStorage.getItem('email')
+          }
 
-        const headers = {
-          'X-USER-TOKEN': localStorage.getItem('token'),
-          "X-USER-EMAIL":localStorage.getItem('email')
-        }
+          const data = {
+            name:name,
+            company_type:type,
+            url:url,
+            foundation_year:value
+          }
 
-        const data = {
-          name:name,
-          company_type:type,
-          url:url,
-          foundation_year:value
-        }
+          axios.post(`${ngrokUrl}/api/v1/companies`,data, {
+              headers: headers
+            }).then(response => {
+            // setIsLoading(false);
+            console.log("String");
+            console.log(response);
+            if (response.data.success === false)
+            {
+              toast.error(response.data.message,  {
+                position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              });
+            //   setFilterCall(false);
+            //   // alert(response.data.message)
+            }
+            else{
+              axios.get(`${ngrokUrl}/api/v1/companies`, {
+                headers: headers
+              }
+              )
+              .then(function(response){
+                if (response.data.success === true){
+                  setUserData(response.data.companies);
+                }
+              })
 
-        axios.post(`${ngrokUrl}/api/v1/companies`,data, {
-            headers: headers
-          }).then(response => {
-          // setIsLoading(false);
-          console.log("String");
-          console.log(response);
-          if (response.data.success === false)
-          {
-            toast.error(response.data.message,  {
+            // userData.push(response.data.company)
+            // setIsFetched(true);
+            // setFilterCall(false);
+            // setIsFiltered(false);
+            // setShowDetails(true);
+          }
+            // setError(false);
+          }).catch(function (error) {
+            console.log(error);
+            toast.error("Something Went Wrong",  {
               position: "top-right",
             autoClose: 5000,
             hideProgressBar: false,
@@ -323,40 +362,10 @@ function FilterTableComponent() {
             pauseOnHover: true,
             draggable: true,
             progress: undefined,
-            });
-          //   setFilterCall(false);
-          //   // alert(response.data.message)
-          }
-          else{
-            axios.get(`${ngrokUrl}/api/v1/companies`, {
-              headers: headers
-            }
-            )
-            .then(function(response){
-              if (response.data.success === true){
-                setUserData(response.data.companies);
-              }
             })
-
-          // userData.push(response.data.company)
-          // setIsFetched(true);
-          // setFilterCall(false);
-          // setIsFiltered(false);
-          // setShowDetails(true);
-        }
-          // setError(false);
-        }).catch(function (error) {
-          console.log(error);
-          toast.error("Something Went Wrong",  {
-            position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
           })
-        })
+
+        }
 
 
     };
@@ -366,10 +375,11 @@ function FilterTableComponent() {
       console.log(id)
       history.push(`/details/${id}`)
     }
+
+
     const resyncCompanyDetail = (id) => {
 
       setResyncing(true);
-
 
       toast.success("Resync in progress",  {
         position: "top-right",
@@ -380,12 +390,10 @@ function FilterTableComponent() {
       draggable: true,
       progress: undefined,
       })
+
       console.log(`before 1st Resync = ${resyncing}`)
 
-
       const axios = require('axios').default;
-
-
 
       axios.get(`${ngrokUrl}/api/v1/resync?company_id=${id}`, {
         headers:{
@@ -393,6 +401,7 @@ function FilterTableComponent() {
           "X-USER-EMAIL":localStorage.getItem('email')
         },
       }).then(function(response){
+
         if (response.data.success === true){
 
 
@@ -461,9 +470,9 @@ function FilterTableComponent() {
                   maxDate={new Date('2023-06-01')}
                   value={value}
                   onChange={setValue}
-
                   renderInput={(params) => <TextField style={{width:"500px"}} {...params} helperText={null} />}
                 />
+                {error && (<p>InValid Year</p>) }
               </Box>
             </LocalizationProvider>
           </div>
