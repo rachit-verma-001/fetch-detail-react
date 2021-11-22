@@ -10,7 +10,7 @@ import { FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Country, State, City } from 'country-state-city';
-
+import Csv from './ExportCsv'
 
 // import { company_name } from './AddData';
 let company_name = ""
@@ -75,11 +75,11 @@ export default function DropDownFilter(props) {
     const [country, setCountry] = useState('')
     const [selectedCountry, setSelectedCountry] = useState('')
     const [city, setCity] = useState('')
-    
+
 
 
     let countryData = Country.getAllCountries()
-    
+
     let selectedCountryStates = State.getStatesOfCountry(country)
     let selectedCity = City.getCitiesOfState(country, state)
     console.log(selectedCity)
@@ -89,7 +89,7 @@ export default function DropDownFilter(props) {
 let countryMatcher = (iso)=>{
     let countryCodesMatcher = countryData.filter(item=> item.isoCode == iso)
         return countryCodesMatcher[0]["name"]
-    
+
 }
 
 
@@ -103,7 +103,7 @@ let stateMatcher = (iso)=>{
 let FilterHandler = ()=>{
     let catchedCountry = '';
     let catchedState=''
- if(country  && country !== ""){ 
+ if(country  && country !== ""){
    catchedCountry = countryMatcher(country)}
  if(state && state!==""){
     catchedState= stateMatcher(state)}
@@ -111,10 +111,10 @@ let FilterHandler = ()=>{
 
     let EmployeeDetails = props.userData.employee_details
     let FoundersDetails = props.userData.founders_details
-  
+
     let filterFinalEmployees =  []
-    let filterFinalFounders =  FoundersDetails.filter(employ=> employ.city.includes(catchedCountry) && employ.city.includes(catchedState) &&employ["city"].includes(city)&&employ.designation.includes(designation) ) 
-            
+    let filterFinalFounders =  FoundersDetails.filter(employ=> employ.city.includes(catchedCountry) && employ.city.includes(catchedState) &&employ["city"].includes(city)&&employ.designation.includes(designation) )
+
     if(designation !=="Employees"){
 
         filterFinalEmployees= EmployeeDetails.filter(employ=> employ.city.includes(catchedCountry) && employ.city.includes(catchedState) &&employ["city"].includes(city)&&employ.designation.includes(designation) )
@@ -123,11 +123,11 @@ let FilterHandler = ()=>{
         filterFinalEmployees= EmployeeDetails.filter(employ=> employ.city.includes(catchedCountry) && employ.city.includes(catchedState) &&employ["city"].includes(city) )
     }
 
-        
+
     props.filteredData(filterFinalFounders,filterFinalEmployees)
-    console.log(designation)    
-    
-    
+    console.log(designation)
+
+
 }
 
 
@@ -146,7 +146,7 @@ let FilterHandler = ()=>{
             setCountry(event.target.value)
             setState("")
             setCity("")
-            
+
         } else if (event.target.name == "City") {
             setCity(event.target.value)
         }
@@ -155,17 +155,17 @@ let FilterHandler = ()=>{
 
 
 
- 
+
 
 //  let extractedLocations = EmployeeDataLocation.map(employee =>{
 //    let splitLocation =  employee.city.split(",")
-    
+
 //      let EmployeeCity = splitLocation[0]
 //      let EmployeeState = splitLocation[1]
 //      let EmployeeCountry = splitLocation[2]
 
 //      console.log(EmployeeCity,EmployeeState)
-  
+
 
 //  })
 
@@ -218,7 +218,7 @@ let FilterHandler = ()=>{
 
         <Grid container spacing={2}>
 
-     
+
 
             <Grid item xs={6}>
                 <Item>
@@ -236,9 +236,9 @@ let FilterHandler = ()=>{
                             {countryData.map(count => {
                                 // console.log(count.isoCode)
 
-                                                            
+
                                 return   <MenuItem value={count.isoCode}>{count.name}</MenuItem>
-                                
+
                             })}
 
                         </Select>
@@ -262,10 +262,10 @@ let FilterHandler = ()=>{
                             {selectedCountryStates.map(IndivState => {
                                 // console.log(IndivState.isoCode)
 
-                                
-                               
+
+
                                 return <MenuItem value={IndivState.isoCode}>{IndivState.name}</MenuItem>
-                                 
+
 
                             })}
                         </Select>
@@ -287,11 +287,11 @@ let FilterHandler = ()=>{
                         >
                             <MenuItem value={""} > Select</MenuItem>
                             {selectedCity.map(cities => {
-                                    
-                                
-                                
+
+
+
                                     return     <MenuItem value={cities.name}>{cities.name}</MenuItem>
-                                
+
 
                             })}
 
@@ -317,16 +317,16 @@ let FilterHandler = ()=>{
                             <MenuItem value={"Chief Executive Officer"}>CEO</MenuItem>
                             <MenuItem value={"Founder "}>Founder</MenuItem>
                             <MenuItem value={"CTO"}>CTO</MenuItem>
-                            <MenuItem value={"COO"}>COO</MenuItem>   
+                            <MenuItem value={"COO"}>COO</MenuItem>
                             <MenuItem value={"CXO"}>CXO</MenuItem>
-                            <MenuItem value={"Employees"}>Employees</MenuItem>   
-                                                     
+                            <MenuItem value={"Employees"}>Employees</MenuItem>
+
                             {/* <MenuItem value={"Software Engineer"}>Software Engineer</MenuItem>
                             <MenuItem value={"Developer"}>Developer</MenuItem>
                             <MenuItem value={"Business Development"}>Business Development</MenuItem> */}
                             <MenuItem value={"Human Resources"}>Human Resources</MenuItem>
                             {/* <MenuItem value={"Designer"}>Designer</MenuItem> */}
-                            
+
 
 
 
@@ -340,6 +340,7 @@ let FilterHandler = ()=>{
         <Grid item mt={2} container spacing={0} direction="column" alignItems="center" justifyContent="center" >
             <Button variant="contained"   onClick={FilterHandler } style={{ width: '240px' }}>Filter</Button>
         </Grid>
+        <Grid item mt={2} spacing={0} direction="column" alignItems="center" justifyContent="center"><Csv/></Grid>
         <ToastContainer position="top-right"
             autoClose={5000}
             hideProgressBar={false}
