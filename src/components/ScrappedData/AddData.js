@@ -1,6 +1,7 @@
 
 import { useTable, useFilters, useGlobalFilter, useAsyncDebounce } from 'react-table'
 import 'bootstrap/dist/css/bootstrap.min.css';
+
 // import { useEffect, useCallback } from 'react';
 import React, { useState, useEffect } from 'react';
 import Button from '@material-ui/core/Button';
@@ -436,9 +437,11 @@ function FilterTableComponent() {
     }
 
     const options = [
-      { value: 'Product Based', label: 'ProductBased' },
-      { value: 'Service Based', label: 'ServiceBased' }
+      { value: 'Product Based', label: 'Product Based' },
+      { value: 'Service Based', label: 'Service Based' },
+      { value: 'other', label: 'Other' }
     ]
+
 
     return (
       <section>
@@ -451,11 +454,23 @@ function FilterTableComponent() {
             <div >
               <Input placeholder="Company Url *" inputProps={ariaLabel} required onChange={e => setUrl(e.target.value)}   style={{width:"500px", marginTop:"10px"}}  />
             </div>
-            <div >
+            <div style={{width:"500px", marginTop:"12px"}}>
 
-              <Input placeholder="Company Type" inputProps={ariaLabel} required onChange={e => setType(e.target.value)}  style={{width:"500px", marginTop:"10px"}}  />
+              {/* <Input placeholder="Company Type" inputProps={ariaLabel} required onChange={e => setType(e.target.value)}  style={{width:"500px", marginTop:"10px"}}  /> */}
 
-            {/* <Select placeholder = "Company Type" options={options}  required onChange={e => setType(e.target.value)} /> */}
+
+              {/* <Select placeholder = "Company Type" options={options}  required onChange={e => setType(e.target.value)} /> */}
+
+              <Select placeholder = "Company Type" options={options}  required onChange={e => setType(e.value)} />
+
+
+
+
+
+
+
+
+
 
             </div>
 
