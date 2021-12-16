@@ -43,7 +43,7 @@ const MainNavigation = () => {
             </IconButton>
           <Typography variant="h6" className={classes.title}>
             {/* Detail Fetch */}
-            <Button><Link to='/' style={{ textDecoration: 'none' }} className={classes.button_color}>Detail Fetch</Link></Button>
+            <Button><Link to='/' style={{ textDecoration: 'none' }} className={classes.button_color}>Web Scrapping</Link></Button>
           </Typography>
           {/* <Button color="inherit" >Login</Button> */}
           <nav>
