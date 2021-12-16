@@ -113,9 +113,12 @@ const AuthForm = () => {
       .then((data) => {
 
         const expirationTime = new Date(
-          new Date().getTime() + 365*3000
+          new Date().getTime() + 28800000
         );
-        authCtx.login(data.user.auth_token, data.user.email, expirationTime.toISOString());
+
+        // authCtx.login(data.user.auth_token, data.user.email, expirationTime.toISOString());
+        authCtx.login(data.user.auth_token, data.user.email);
+
         history.replace('/');
       })
       .catch((err) => {

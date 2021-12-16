@@ -5,13 +5,23 @@ import { styled, alpha } from '@mui/material/styles';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
-import { FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+
+import { useLocation } from 'react-router-dom';
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Country, State, City } from 'country-state-city';
-import Csv from './ExportCsv'
+import Csv from './ExportCsv';
 
+import { ngrokUrl } from '../../store/HostUrl';
+
+import Select2 from 'react-select';
+import makeAnimated from 'react-select/animated';
+import classes from './DropDownFilter.module.css';
+
+
+const animatedComponents = makeAnimated();
 // import { company_name } from './AddData';
 let company_name = ""
 const Search = styled('div')(({ theme }) => ({
@@ -47,6 +57,15 @@ const SearchIconWrapper = styled('div')(({ theme }) => ({
     justifyContent: 'center',
 }));
 
+const customStyles = {
+  control: (base) => ({
+    ...base,
+    height: 57,
+    minHeight: 57,
+		marginTop: -2
+  })
+};
+
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
     color: 'inherit',
@@ -71,64 +90,214 @@ export default function DropDownFilter(props) {
 
     const [company, setCompany] = useState('');
     const [designation, setDesignation] = useState('')
+    const [designation2, setDesignation2] = useState([''])
     const [state, setState] = useState('')
     const [country, setCountry] = useState('')
     const [selectedCountry, setSelectedCountry] = useState('')
     const [city, setCity] = useState('')
-
-
-
+    const [state2, setState2] = useState('')
+		const [showName, setShowName] = useState(false)
     let countryData = Country.getAllCountries()
 
     let selectedCountryStates = State.getStatesOfCountry(country)
-    let selectedCity = City.getCitiesOfState(country, state)
+    console.log("Selected State=")
+    console.log(selectedCountryStates)
+    console.log("State=")
+    console.log(state)
+		console.log("State2=")
+		console.log(state2)
+
+    let selectedCity = City.getCitiesOfState(country, state2)
+    console.log("Selected City=")
     console.log(selectedCity)
 
 
-
-let countryMatcher = (iso)=>{
-    let countryCodesMatcher = countryData.filter(item=> item.isoCode == iso)
+    let countryMatcher = (iso)=>{
+        let countryCodesMatcher = countryData.filter(item=> item.isoCode == iso)
         return countryCodesMatcher[0]["name"]
+    }
 
+
+    let stateMatcher = (iso)=>{
+        // let stateCodesMatcher = selectedCountryStates.filter(item=>item.name == iso)
+        let stateCodesMatcher = selectedCountryStates.filter(item=>item.isoCode == iso)
+            return stateCodesMatcher[0]["name"]
+    }
+
+	const Location = useLocation();
+
+	let FilterHandler2 = () =>
+	{
+
+		let catchedCountry = '';
+        console.log("Filter Designation 2=")
+        console.log(designation2)
+        let catchedState=''
+
+		if (country && country!=="")
+        {
+            catchedCountry = countryMatcher(country)
+        }
+
+        if(state && state!=="")
+        {
+            catchedState= stateMatcher(state)
+        }
+
+        let EmployeeDetails = props.userData.employee_details
+        let FoundersDetails = props.userData.founders_details
+
+        let filterFinalEmployees =  []
+
+        let filterFinalFounders = []
+
+        const axios = require('axios').default;
+
+		try
+		{
+		  let id = Location.pathname.split("/details/")[1];
+          let docState = document.getElementById('demo-state').firstChild.nodeValue
+          let docCountry = document.getElementById('demo-Country').firstChild.nodeValue
+		  axios.get(`${ngrokUrl}/api/v1/search`, {
+          headers:
+			{
+              'X-USER-TOKEN': localStorage.getItem('token'),
+              "X-USER-EMAIL":localStorage.getItem('email')
+            },
+            params:{
+				id: id,
+                city:city,
+                state: docState,
+				country:docCountry,
+                employee_types:designation2.map(desig=>desig.value)
+            }
+        })
+
+        .then(function (response) {
+        if (response.data.success === false)
+        {
+          // alert(response.data.message)
+          toast.error(response.data.message,  {
+            position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          });
+          // setIsFiltered(false)
+        }
+        else{
+            filterFinalEmployees = response.data.employee_details;
+            filterFinalFounders = response.data.founder_details;
+            localStorage.removeItem('fcity',city);
+            localStorage.removeItem('fstate',state);
+            localStorage.removeItem('fcountry',country);
+            localStorage.removeItem('fdesignation',designation2);
+            localStorage.removeItem('id', id)
+            let docState2 = document.getElementById('demo-state').firstChild.nodeValue
+            let docCountry2 = document.getElementById('demo-Country').firstChild.nodeValue
+            localStorage.setItem('fcity',city);
+            localStorage.setItem('fstate',docState2);
+            localStorage.setItem('fcountry',docCountry2);
+            localStorage.setItem('fdesignation',designation2.map(desig=>desig.value));
+            localStorage.setItem('id', id)
+            props.filteredData(filterFinalFounders,filterFinalEmployees,response.data.pagination,city,state,country,designation2);
+        }
+          // setError(false);
+      })
+      .catch(function (error) {
+        console.log(error);
+        toast.error(error,  {
+          position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        });
+      })
+    }catch (error) {
+      console.error(error);
+      toast.error(error,  {
+        position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      });
+    }
 }
 
+	let FilterHandler = ()=>{
 
-let stateMatcher = (iso)=>{
-    let stateCodesMatcher = selectedCountryStates.filter(item=>item.isoCode ==iso)
-         return stateCodesMatcher[0]["name"]
-}
+		let catchedCountry = '';
+        console.log("Filter Designation 2=")
+        console.log(designation2)
+        let catchedState=''
 
+		if(country  && country !== "")
+		{
+			catchedCountry = countryMatcher(country)
+		}
 
-
-let FilterHandler = ()=>{
-    let catchedCountry = '';
-    let catchedState=''
- if(country  && country !== ""){
-   catchedCountry = countryMatcher(country)}
- if(state && state!==""){
-    catchedState= stateMatcher(state)}
-
+		if(state && state!=="")
+		 {
+    	catchedState= stateMatcher(state)
+		}
 
     let EmployeeDetails = props.userData.employee_details
     let FoundersDetails = props.userData.founders_details
 
     let filterFinalEmployees =  []
-    let filterFinalFounders =  FoundersDetails.filter(employ=> employ.city.includes(catchedCountry) && employ.city.includes(catchedState) &&employ["city"].includes(city)&&employ.designation.includes(designation) )
 
-    if(designation !=="Employees"){
+		let filterFinalFounders =  FoundersDetails.filter(employ=> employ.city.includes(catchedCountry) && employ.city.includes(catchedState) &&employ["city"].includes(city)&&employ.designation.includes(designation) )
 
-        filterFinalEmployees= EmployeeDetails.filter(employ=> employ.city.includes(catchedCountry) && employ.city.includes(catchedState) &&employ["city"].includes(city)&&employ.designation.includes(designation) )
+    // if(designation !=="Employees"){
 
-    }else{
-        filterFinalEmployees= EmployeeDetails.filter(employ=> employ.city.includes(catchedCountry) && employ.city.includes(catchedState) &&employ["city"].includes(city) )
+    //     filterFinalEmployees= EmployeeDetails.filter(employ=> employ.city.includes(catchedCountry) && employ.city.includes(catchedState) &&employ["city"].includes(city)&&employ.designation.includes(designation) )
+
+    // }
+
+    // else
+    // {
+    //     filterFinalEmployees= EmployeeDetails.filter(employ=> employ.city.includes(catchedCountry) && employ.city.includes(catchedState) &&employ["city"].includes(city) )
+    // }
+
+    let ades = []
+
+    if (designation2)
+    {
+        console.log("bedore ades = ")
+        console.log(ades)
+
+        designation2.map(designat =>
+            ades.push(EmployeeDetails.filter(employ=> employ.designation.includes(designat.value)))
+            )
+            console.log("after ades=")
+            console.log(ades)
+
+        // filterFinalEmployees= EmployeeDetails.filter(employ=> employ.city.includes(catchedCountry) && employ.city.includes(catchedState) &&employ["city"].includes(city)&&employ.designation.includes(designation2) )
+
     }
-
 
     props.filteredData(filterFinalFounders,filterFinalEmployees)
     console.log(designation)
 
-
 }
+
+    const handleDesignation = (event) => {
+        console.log("Before Designation2=")
+        console.log(designation2)
+        // console.log(event)
+        setDesignation2(event)
+        console.log("After Designation2=")
+        console.log(designation2)
+    }
 
 
     const handleChange = (event) => {
@@ -139,21 +308,38 @@ let FilterHandler = ()=>{
         } else if (event.target.name == "Designation") {
             setDesignation(event.target.value)
         } else if (event.target.name == "State") {
-            setState(event.target.value)
+                setShowName(false)
+            if (event.target.value.name){
+            setState(event.target.value.name)
+            setState2(event.target.value.isoCode)
+            }
+            else if (event.target.value)
+            {
+                setState(event.target.value)
+                setState2(event.target.value)
+            }
+                    setShowName(true)
             setCity("")
 
         } else if (event.target.name == "Country") {
             setCountry(event.target.value)
             setState("")
             setCity("")
+            setState2("")
 
         } else if (event.target.name == "City") {
-            setCity(event.target.value)
+					console.log("Before City=")
+					console.log(city)
+					setCity(event.target.value)
+					console.log("After City=")
+					console.log(city)
         }
 
+        // else if (event.target.name == "Designation2") {
+        //     setDesignation2(event.target.value)
+        // }
+
     };
-
-
 
 
 
@@ -211,14 +397,18 @@ let FilterHandler = ()=>{
     //   };
 
 
+    const options = [
+        { value: 'Human Resource', label: 'HR' },
+        { value: 'Chief Executive Officer', label: 'CEO' },
+        { value: 'Chief Technology Officer', label: 'CTO' },
+        { value: 'Chief Operating Officer', label: 'COO' },
+        { value: 'Employees', label: 'Employees' },
+				{ value: 'Founder', label: 'Founder' }
+      ]
 
-
-
-    return (<>
+		return (<>
 
         <Grid container spacing={2}>
-
-
 
             <Grid item xs={6}>
                 <Item>
@@ -235,18 +425,16 @@ let FilterHandler = ()=>{
                             <MenuItem value={""} > Select</MenuItem>
                             {countryData.map(count => {
                                 // console.log(count.isoCode)
-
-
                                 return   <MenuItem value={count.isoCode}>{count.name}</MenuItem>
-
                             })}
 
                         </Select>
+
                     </FormControl>
                 </Item>
             </Grid>
 
-            <Grid item xs={6}>
+            <Grid item xs={6} >
                 <Item>
                     <FormControl fullWidth>
                         <InputLabel id="State">State</InputLabel>
@@ -258,16 +446,16 @@ let FilterHandler = ()=>{
                             name="State"
                             onChange={handleChange}
                         >
-                             <MenuItem value={""}  > Select</MenuItem>
-                            {selectedCountryStates.map(IndivState => {
-                                // console.log(IndivState.isoCode)
+                        <MenuItem value={""}  > Select</MenuItem>
 
+                        {selectedCountryStates.map(IndivState => {
+                        // console.log(IndivState.isoCode)
 
+                        // return <MenuItem value={ showName ? IndivState.name : IndivState}>{IndivState.name}</MenuItem>
+                        return <MenuItem value={ IndivState.isoCode}>{IndivState.name}</MenuItem>
 
-                                return <MenuItem value={IndivState.isoCode}>{IndivState.name}</MenuItem>
+                        })}
 
-
-                            })}
                         </Select>
                     </FormControl>
                 </Item>
@@ -276,7 +464,8 @@ let FilterHandler = ()=>{
             <Grid item xs={6}>
                 <Item>
                     <FormControl fullWidth>
-                        <InputLabel id="City">City</InputLabel>
+                        <InputLabel id="City" >City</InputLabel>
+
                         <Select
                             labelId="City"
                             id="demo-City"
@@ -285,14 +474,11 @@ let FilterHandler = ()=>{
                             name="City"
                             onChange={handleChange}
                         >
-                            <MenuItem value={""} > Select</MenuItem>
+
+                            <MenuItem value={""} >Select</MenuItem>
+
                             {selectedCity.map(cities => {
-
-
-
-                                    return     <MenuItem value={cities.name}>{cities.name}</MenuItem>
-
-
+                                return <MenuItem value={cities.name}>{cities.name}</MenuItem>
                             })}
 
                         </Select>
@@ -300,57 +486,42 @@ let FilterHandler = ()=>{
                 </Item>
             </Grid>
 
-            <Grid item xs={6}>
-                <Item>
-                    <FormControl fullWidth>
-                        <InputLabel id="Designation">Designation</InputLabel>
-                        <Select
-                            labelId="Designation"
-                            id="demo-designation"
-                            value={designation}
-                            label="Designation"
-                            name="Designation"
-                            onChange={handleChange}
-                            placeHolder = "Select"
-                        >
-                            <MenuItem value={""}  > Select</MenuItem>
-                            <MenuItem value={"Chief Executive Officer"}>CEO</MenuItem>
-                            <MenuItem value={"Founder "}>Founder</MenuItem>
-                            <MenuItem value={"CTO"}>CTO</MenuItem>
-                            <MenuItem value={"COO"}>COO</MenuItem>
-                            <MenuItem value={"CXO"}>CXO</MenuItem>
-                            <MenuItem value={"Employees"}>Employees</MenuItem>
+			<Grid item xs={6} >
 
-                            {/* <MenuItem value={"Software Engineer"}>Software Engineer</MenuItem>
-                            <MenuItem value={"Developer"}>Developer</MenuItem>
-                            <MenuItem value={"Business Development"}>Business Development</MenuItem> */}
-                            <MenuItem value={"Human Resources"}>Human Resources</MenuItem>
-                            {/* <MenuItem value={"Designer"}>Designer</MenuItem> */}
+				<Item >
+					<FormControl  fullWidth >
+						<Select2 name="Designation2" placeholder = "Designation" styles={customStyles}
+								closeMenuOnSelect={false}  classNamePrefix="select"
+								// components={animatedComponents}
+								isMulti
+								options={options}
+								onChange={handleDesignation}
+						/>
+					</FormControl>
+				</Item>
 
+			</Grid>
 
+			</Grid>
 
+			<Grid item mt={2} container spacing={0} direction="column" alignItems="center" justifyContent="center" >
 
+				<Button variant="contained" onClick={FilterHandler2 } style={{ width: '240px' }}>Filter</Button>
 
-                        </Select>
-                    </FormControl>
-                </Item>
-            </Grid>
-        </Grid>
+			</Grid>
 
-        <Grid item mt={2} container spacing={0} direction="column" alignItems="center" justifyContent="center" >
-            <Button variant="contained"   onClick={FilterHandler } style={{ width: '240px' }}>Filter</Button>
-        </Grid>
-        <Grid item mt={2} spacing={0} direction="column" alignItems="center" justifyContent="center"><Csv/></Grid>
-        <ToastContainer position="top-right"
-            autoClose={5000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover />
+		    <Grid item xs={6} mt={2} spacing={0} direction="column" alignItems="center" justifyContent="center"><Csv/></Grid>
 
-    </>
+					<ToastContainer position="top-right"
+							autoClose={5000}
+							hideProgressBar={false}
+							newestOnTop={false}
+							closeOnClick
+							rtl={false}
+							pauseOnFocusLoss
+							draggable
+							pauseOnHover />
+
+			</>
     )
 }

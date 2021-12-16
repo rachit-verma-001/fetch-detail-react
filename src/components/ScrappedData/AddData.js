@@ -1,5 +1,5 @@
+import { useTable, useFilters, useGlobalFilter, useAsyncDebounce, usePagination } from 'react-table'
 
-import { useTable, useFilters, useGlobalFilter, useAsyncDebounce } from 'react-table'
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 // import { useEffect, useCallback } from 'react';
@@ -68,7 +68,6 @@ function DefaultColumnFilter({
 }
 
 function Table({ columns, data }) {
-
     const defaultColumn = React.useMemo(
         () => ({
             // Default Filter UI
@@ -80,11 +79,23 @@ function Table({ columns, data }) {
         getTableProps,
         getTableBodyProps,
         headerGroups,
-        rows,
+        // rows,
+        page,
         prepareRow,
-        state,
+        // state,
         preGlobalFilteredRows,
         setGlobalFilter,
+        canPreviousPage,
+        canNextPage,
+        pageOptions,
+        pageCount,
+        gotoPage,
+        nextPage,
+        previousPage,
+        setPageSize,
+        state,
+        state: { pageIndex, pageSize },
+
     } = useTable(
         {
             columns,
@@ -92,7 +103,8 @@ function Table({ columns, data }) {
             defaultColumn,
         },
         useFilters,
-        useGlobalFilter
+        useGlobalFilter,
+        usePagination
     )
 
     return (
@@ -117,7 +129,7 @@ function Table({ columns, data }) {
                     ))}
                 </thead>
                 <tbody {...getTableBodyProps()}>
-                    {rows.map((row, i) => {
+                    {page.map((row, i) => {
                         prepareRow(row)
                         return (
                             <tr {...row.getRowProps()}>
@@ -130,7 +142,52 @@ function Table({ columns, data }) {
                 </tbody>
             </table>
             <br />
-          </div>
+            <div className="pagination">
+        <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
+          {'<<'}
+        </button>{' '}
+        <button onClick={() => previousPage()} disabled={!canPreviousPage}>
+          {'<'}
+        </button>{' '}
+        <button onClick={() => nextPage()} disabled={!canNextPage}>
+          {'>'}
+        </button>{' '}
+        <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
+          {'>>'}
+        </button>{' '}
+        <span>
+          Page{' '}
+          <strong>
+            {pageIndex + 1} of {pageOptions.length}
+          </strong>{' '}
+        </span>
+        <span>
+          | Go to page:{' '}
+          <input
+            type="number"
+            defaultValue={pageIndex + 1}
+            onChange={e => {
+              const page = e.target.value ? Number(e.target.value) - 1 : 0
+              gotoPage(page)
+            }}
+            style={{ width: '100px' }}
+          />
+        </span>{' '}
+        <select
+          value={pageSize}
+          onChange={e => {
+            setPageSize(Number(e.target.value))
+          }}
+        >
+          {[5, 10, 20, 30, 40, 50].map(pageSize => (
+            <option key={pageSize} value={pageSize}>
+              Show {pageSize}
+            </option>
+          ))}
+        </select>
+      </div>
+    </div>
+
     )
 }
 
@@ -154,6 +211,11 @@ function FilterTableComponent() {
                         Header: 'Foundation Year',
                         accessor: 'foundation_year'
                     },
+                    {
+                        Header: 'Posts',
+                        accessor: 'posts'
+                    },
+
                     {
                         filterable: false,
                         Header: 'Details',
@@ -180,8 +242,8 @@ function FilterTableComponent() {
                         onClick={ () => resyncCompanyDetail(row.original.id)
                       }
                       >
-                        {resyncing ? "Resyncing" : "Resync"}
-                        {/* Resync */}
+                        {/* {resyncing ? "Resyncing" : "Resync"} */}
+                        Resync
                         </Button>
                   },
                   {
@@ -195,6 +257,23 @@ function FilterTableComponent() {
                     name= {row.original.id} onClick={ () => destroyCompanyDetail(row.original.id)}
                   > Destroy</Button>
                 },
+
+                {
+                  filterable: false,
+                  Header: 'Progress',
+                  accessor: 'resync_progress',
+                  disableFilters:true,
+
+                  Cell: s => (
+                    <span style={{color:"red"}}  className={"RedColor"}>
+                      {s.value}
+                    </span>
+                  ),
+
+              },
+
+
+
         ],
         []
     )
@@ -205,6 +284,7 @@ function FilterTableComponent() {
     const [name, setName] = useState('');
     const [type, setType] = useState('');
     const [count, setCount] = useState(0);
+    const [posts, setPosts] = useState([]);
 
     const [value, setValue] = useState(new Date());
 
@@ -235,10 +315,10 @@ function FilterTableComponent() {
               "X-USER-EMAIL":localStorage.getItem('email')
             }
           }).then(function(response){
-            if (response.data.success === true){
-              setUserData(response.data.companies);
-            }
-            else{
+          if (response.data.success === true){
+            setUserData(response.data.companies);
+          }
+          else{
           toast.error(response.data.message,  {
             position: "top-right",
           autoClose: 5000,
@@ -312,7 +392,9 @@ function FilterTableComponent() {
             name:name,
             company_type:type,
             url:url,
-            foundation_year:value
+            foundation_year:value,
+            // posts:posts.map(post=>post.value)
+            posts:posts
           }
 
           axios.post(`${ngrokUrl}/api/v1/companies`,data, {
@@ -367,34 +449,53 @@ function FilterTableComponent() {
           })
 
         }
-
-
     };
 
     const history = useHistory();
     const fetchCompanyDetail =(id) =>{
       console.log(id)
+
+
+      // const axios = require('axios').default;
+      // axios.get(`https://www.linkedin.com/in/rachit-verma-31912813b/`, {
+      // }).then(function(response){
+      //   console.log(response)
+      // })
+
+
       history.push(`/details/${id}`)
     }
 
+    const handlePostChange = (event)=>{
 
+      setPosts(event.target.value.split(","))
+    }
     const resyncCompanyDetail = (id) => {
 
-      setResyncing(true);
+      // setResyncing(true);
 
-      toast.success("Resync in progress",  {
-        position: "top-right",
-      autoClose: 10000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
+      // toast.success("Resync in progress",  {
+      //   position: "top-right",
+      //   autoClose: 40000,
+      //   hideProgressBar: false,
+      //   closeOnClick: true,
+      //   pauseOnHover: true,
+      //   draggable: true,
+      //   progress: undefined,
+      // })
+      const axios = require('axios').default;
+      axios.get(`${ngrokUrl}/api/v1/companies/${id}/resyncing?resync_progress=syncing in progress`, {
+        headers:{
+          'X-USER-TOKEN': localStorage.getItem('token'),
+          "X-USER-EMAIL":localStorage.getItem('email')
+        },
+      }).then(function(response){
+        setUserData(response.data.companies)
       })
 
       console.log(`before 1st Resync = ${resyncing}`)
 
-      const axios = require('axios').default;
+
 
       axios.get(`${ngrokUrl}/api/v1/resync?company_id=${id}`, {
         headers:{
@@ -405,35 +506,51 @@ function FilterTableComponent() {
 
         if (response.data.success === true){
 
+          axios.get(`${ngrokUrl}/api/v1/companies/${id}/resyncing?resync_progress=Synced`, {
+            headers:{
+              'X-USER-TOKEN': localStorage.getItem('token'),
+              "X-USER-EMAIL":localStorage.getItem('email')
+            },
+          }).then(function(response){
+            setUserData(response.data.companies)
+          })
 
           console.log(`after 1st Resync = ${resyncing}`)
-            setResyncing(false);
+          setResyncing(false);
 
-            console.log(`After Resync Success = ${resyncing}`)
-            toast.success("Resync Sucess",{
-              position: "top-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-              })
-          }
-          else{
-            setResyncing(false);
-            console.log(`After Resync not success = ${resyncing}`)
-            toast.error(response.data.message,  {
+          console.log(`After Resync Success = ${resyncing}`)
+          toast.success("Resync Sucess",{
           position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        });
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          })
+        }
+        else{
+          setResyncing(false);
+          axios.get(`${ngrokUrl}/api/v1/companies/${id}/resyncing?resync_progress=Synced`, {
+            headers:{
+              'X-USER-TOKEN': localStorage.getItem('token'),
+              "X-USER-EMAIL":localStorage.getItem('email')
+            },
+          }).then(function(response){
+            setUserData(response.data.companies)
+          })
+
+          console.log(`After Resync not success = ${resyncing}`)
+          toast.error(response.data.message,  {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          });
           }
         })
-
     }
 
     const options = [
@@ -442,6 +559,12 @@ function FilterTableComponent() {
       { value: 'other', label: 'Other' }
     ]
 
+    const post_options = [
+      { value: 'HUMAN RESOURCES', label: 'HR' },
+      { value: 'CEO', label: 'CEO' },
+      { value: 'COO', label: 'COO' },
+      { value: 'FOUNDER', label: 'FOUNDER' }
+    ]
 
     return (
       <section>
@@ -454,27 +577,8 @@ function FilterTableComponent() {
             <div >
               <Input placeholder="Company Url *" inputProps={ariaLabel} required onChange={e => setUrl(e.target.value)}   style={{width:"500px", marginTop:"10px"}}  />
             </div>
-            <div style={{width:"500px", marginTop:"12px"}}>
 
-              {/* <Input placeholder="Company Type" inputProps={ariaLabel} required onChange={e => setType(e.target.value)}  style={{width:"500px", marginTop:"10px"}}  /> */}
-
-
-              {/* <Select placeholder = "Company Type" options={options}  required onChange={e => setType(e.target.value)} /> */}
-
-              <Select placeholder = "Company Type" options={options}  required onChange={e => setType(e.value)} />
-
-
-
-
-
-
-
-
-
-
-            </div>
-
-          <div style = {{marginLeft:"-17px"}}>
+            <div style = {{marginLeft:"-17px"}}>
             <LocalizationProvider dateAdapter={AdapterDateFns}>
               <Box m={2} >
                 <DatePicker
@@ -492,21 +596,39 @@ function FilterTableComponent() {
             </LocalizationProvider>
           </div>
 
-            <Grid container spacing={2}>
-              <Grid item>
-                <Box pt={2}>
-                  <Button variant='outlined'
-                      type='submit' sx = {{mt:20}} style = {{width:'217px', position:'absolute', left:'42%'}}
-                      name="Fetch"
-                    >
-                      {/* {showDetails ? 'Hide Details' : 'Fetch Detais'} */}
-                      Add
-                    </Button>
-                </Box>
-              </Grid>
+          <div style={{width:"500px", marginTop:"12px"}}>
 
-            </Grid>
-          </form>
+              {/* <Input placeholder="Company Type" inputProps={ariaLabel} required onChange={e => setType(e.target.value)}  style={{width:"500px", marginTop:"10px"}}  /> */}
+
+
+              {/* <Select placeholder = "Company Type" options={options}  required onChange={e => setType(e.target.value)} /> */}
+
+              <Select placeholder = "Company Type" options={options}  required onChange={e => setType(e.value)} />
+
+          </div>
+
+          <div style={{width:"500px", marginTop:"12px"}}>
+          {/* <Select placeholder = "Posts" isMulti options={post_options}  required onChange={handlePostChange} /> */}
+
+          <Input placeholder="Posts *" required inputProps={ariaLabel} onChange={handlePostChange} required style={{width:"500px"}}  />
+
+
+          </div>
+
+              <Grid container spacing={2}>
+                <Grid item>
+                  <Box pt={2}>
+                    <Button variant='outlined'
+                        type='submit' sx = {{mt:20}} style = {{width:'217px', position:'absolute', left:'42%'}}
+                        name="Fetch"
+                      >
+                        {/* {showDetails ? 'Hide Details' : 'Fetch Detais'} */}
+                        Add
+                      </Button>
+                  </Box>
+                </Grid>
+              </Grid>
+            </form>
           </Grid>
           <ToastContainer position="top-right"
           autoClose={5000}
@@ -517,9 +639,10 @@ function FilterTableComponent() {
           pauseOnFocusLoss
           draggable
           pauseOnHover/>
+
         {< Table columns={columns} data={userData} />}
       </section>
     )
-}
+  }
 
 export default FilterTableComponent;

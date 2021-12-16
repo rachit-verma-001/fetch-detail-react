@@ -9,9 +9,9 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useState} from 'react';
 import ButtonBase from '@mui/material/ButtonBase';
-import DropDownFilter from "./DropDownFilter"
+import DropDownFilter from "./DropDownFilter";
 import { ngrokUrl } from '../../store/HostUrl';
-
+import Pagination from '@material-ui/lab/Pagination';
 
 
 const Img = styled('img')({
@@ -29,8 +29,6 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
-
-
 const EmployeeData = (props) => {
 
   const { id } = useParams();
@@ -39,20 +37,32 @@ const EmployeeData = (props) => {
   let employee_details;
   let founders_details;
 
+  const [designation2, setDesignation2] = useState([''])
+  const [state, setState] = useState('')
+  const [country, setCountry] = useState('')
+  const [city, setCity] = useState('')
 
   const [isFetched, setIsFetched] = useState(false);
   const [userData, setUserData] = useState({});
   const [showDetails, setShowDetails] = useState(false);
   const [ userDataBackup,setUserDataBackup] = useState({})
+  const [totalPages, setTotalPages] = useState();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isFiltered, setIsFiltered] = useState(false);
 
   useEffect(() => {
       const axios = require('axios').default;
+
+      localStorage.removeItem('fcity')
+      localStorage.removeItem('fstate')
+      localStorage.removeItem('fcountry')
+      localStorage.removeItem('fdesignation')
       try {
         axios.get(`${ngrokUrl}/api/v1/companies/${id}`, {
           headers:{
             'X-USER-TOKEN': localStorage.getItem('token'),
             "X-USER-EMAIL":localStorage.getItem('email')
-          }
+          },
         })
         .then(function (response) {
           if (response.data.success === false)
@@ -70,16 +80,15 @@ const EmployeeData = (props) => {
             // setIsFiltered(false)
           }
           else{
-            setUserData(response.data)
-            setUserDataBackup(response.data)
+            setUserData(response.data);
+            setUserDataBackup(response.data);
             setIsFetched(true);
+            setTotalPages(response.data.pagination.total_pages);
             // setIsFiltered(false);
             setShowDetails(true);
+            setCurrentPage(response.data.pagination.current_page);
           }
             // setError(false);
-
-
-
         })
         .catch(function (error) {
           console.log(error);
@@ -105,11 +114,7 @@ const EmployeeData = (props) => {
         progress: undefined,
         });
       }
-
-
   }, [id]);
-
-
 
   if (isFetched)
   {
@@ -141,7 +146,6 @@ const EmployeeData = (props) => {
 
   }
 
-
   function Data(props){
     return (<div>
       <Card>
@@ -156,7 +160,7 @@ const EmployeeData = (props) => {
           </Grid>
           <Grid item>
             <ButtonBase sx={{ width: 226 }}>
-              <Img alt="complex" src={props.user.image} />
+              <Img alt="logo" src={props.user.image} />
             </ButtonBase>
             </Grid>
         </Grid>
@@ -165,22 +169,24 @@ const EmployeeData = (props) => {
   }
 
   console.log(userData)
-let filteredData =(founderDetails,employeeDetails)=>{
 
+  let filteredData =(founderDetails,employeeDetails, pagination_details, fcity,fstate,fcountry,fdesignation2)=>{
 
   let data = {}
-  
+
   data.founders_details = founderDetails
   data.employee_details = employeeDetails
   console.log(data.founders_details)
 
   setUserData({company:userData.company,founders_details:founderDetails,employee_details:employeeDetails })
-
   console.log(data.founders_details)
-
+  setTotalPages(pagination_details.total_pages);
+  setCity(fcity);
+  setState(fstate);
+  setCountry(fcountry);
+  setDesignation2(fdesignation2);
+  setIsFiltered(true);
   console.log(founderDetails,employeeDetails)
-
-
   // setUserData(userData.founders_details)
   // userData.employee_details
 
@@ -190,115 +196,220 @@ useEffect(()=>{
   console.log(userData)
 },[userData])
 
+  const handleUserPagination = (event,value) => {
+    setCurrentPage(value);
+    console.log("After Value Changes")
+    console.log(currentPage);
+    const axios = require('axios').default;
 
+    try {
+
+
+    //   axios.get(`${ngrokUrl}/api/v1/search`, {
+    //     headers:
+    // {
+    //         'X-USER-TOKEN': localStorage.getItem('token'),
+    //         "X-USER-EMAIL":localStorage.getItem('email')
+    //       },
+    //       params:{
+    //           id: id,
+    //           city:localStorage.getItem('fcity'),
+    //           state:localStorage.getItem('fstate'),
+    //           country:localStorage.getItem('fcountry'),
+    //           employee_types:localStorage.getItem('fdesignation').map(desig=>desig.value),
+    //           page:value
+    //       }
+    //   })
+
+
+        if (isFiltered)
+        {
+          const fcity = localStorage.getItem('fcity')
+          const fstate = localStorage.getItem('fstate')
+          const fcountry = localStorage.getItem('fcountry')
+          const employee_type = localStorage.getItem('fdesignation')
+
+          axios.get(`${ngrokUrl}/api/v1/search`, {
+            headers:
+              {
+                'X-USER-TOKEN': localStorage.getItem('token'),
+                "X-USER-EMAIL":localStorage.getItem('email')
+              },
+              params:{
+                id: id,
+                city:fcity,
+                state:fstate,
+                country:fcountry,
+                employee_types:employee_type,
+                page:value
+              }
+          })
+          .then(function (response) {
+            if (response.data.success === false)
+            {
+              // alert(response.data.message)
+              localStorage.removeItem('fcity')
+              localStorage.removeItem('fstate')
+              localStorage.removeItem('fcountry')
+              localStorage.removeItem('fdesignation')
+
+              toast.error(response.data.message,  {
+                position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              });
+              // setIsFiltered(false)
+            }
+            else{
+
+              localStorage.removeItem('fcity')
+              localStorage.removeItem('fstate')
+              localStorage.removeItem('fcountry')
+              localStorage.removeItem('fdesignation')
+              setUserData(response.data);
+
+              setUserDataBackup(response.data);
+              setIsFetched(true);
+              setTotalPages(response.data.pagination.total_pages);
+              // setIsFiltered(false);
+              setShowDetails(true);
+              // setCurrentPage(response.data.pagination.current_page);
+            }
+              // setError(false);
+          })
+          .catch(function (error) {
+            console.log(error);
+            toast.error(error,  {
+              position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            });
+          })
+
+        }
+
+        else{
+          localStorage.removeItem('fcity')
+          localStorage.removeItem('fstate')
+          localStorage.removeItem('fcountry')
+          localStorage.removeItem('fdesignation')
+          axios.get(`${ngrokUrl}/api/v1/companies/${id}`, {
+            headers:{
+              'X-USER-TOKEN': localStorage.getItem('token'),
+              "X-USER-EMAIL":localStorage.getItem('email')
+            },
+            params:{
+              page: value
+            }
+          })
+          .then(function (response) {
+            if (response.data.success === false)
+            {
+              // alert(response.data.message)
+              toast.error(response.data.message,  {
+                position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              });
+              // setIsFiltered(false)
+            }
+            else{
+              setUserData(response.data);
+
+              setUserDataBackup(response.data);
+              setIsFetched(true);
+              setTotalPages(response.data.pagination.total_pages);
+              // setIsFiltered(false);
+              setShowDetails(true);
+              // setCurrentPage(response.data.pagination.current_page);
+            }
+              // setError(false);
+          })
+          .catch(function (error) {
+            console.log(error);
+            toast.error(error,  {
+              position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            });
+          })
+        }
+
+    } catch (error) {
+      console.error(error);
+      toast.error(error,  {
+        position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      });
+    }
+
+
+  // this.setState({ setUserPage: value }, () => {
+  //   this.getUsersByBrand(this.state.selectedBrandId);
+  // });
+
+
+};
 
   return (
 
     <section >
       <Grid container spacing={0} direction="column" alignItems="center" justifyContent="center">
       </Grid>
-      {showDetails && <div> <Card>
-      <ul><li>{heading_title}</li></ul>
+
+      {showDetails &&
+      <div>
+         <Card>
+            <ul><li>{heading_title}</li></ul>
+          </Card>
+      <Card>
+        <DropDownFilter   userData = {userDataBackup}  filteredData={filteredData} />
       </Card>
-      
-      <Card> 
-      <DropDownFilter   userData = {userDataBackup}  filteredData={filteredData} />
-      </Card>
-     
+
      {founders_details.length>0 ? <Card>
-        
+      {/* <Pagination count={10} /> */}
         <Grid container spacing={2}>
-    {/* <Grid item xs={6}>
-      <Item>
-        <Search>
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="First Name…"
-              inputProps={{ 'aria-label': 'search' }} onChange={firstNameChangeHandler}
-            />
-        </Search>
-      </Item>
-    </Grid> */}
 
-    {/* <Grid item xs={6}>
-      <Item>
-        <Search>
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="Last Name…"
-              inputProps={{ 'aria-label': 'search' }} onChange={lastNameChangeHandler}
-            />
-        </Search>
-      </Item>
-    </Grid> */}
-
-
-    {/* <Grid item xs={6}>
-      <Item>
-        <Search>
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="Email…"
-              inputProps={{ 'aria-label': 'search' }} onChange={emailChangeHandler}
-            />
-        </Search>
-      </Item>
-    </Grid> */}
-
-
-    {/* <Grid item xs={6}>
-      <Item>
-        <Search>
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="City…"
-              inputProps={{ 'aria-label': 'search' }} onChange={cityChangeHandler}
-            />
-        </Search>
-      </Item>
-    </Grid> */}
-
-    {/* <Grid item xs={12}>
-      <Item>
-        <Search>
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="Designation…"
-              inputProps={{ 'aria-label': 'search' }} onChange={designationChangeHandler}
-            />
-        </Search>
-      </Item>
-    </Grid> */}
-
-
-  </Grid>
-
-  {/* <Grid container spacing={2}>
-    <Grid item xs={6} mt={2} container spacing={0} direction="column" alignItems="center" justifyContent="center" >
-      <Button variant="outlined" onClick={filterData} style={{width:'240px'}}>Filter</Button>
     </Grid>
-    <Grid item xs={6} mt={2} spacing={0} direction="column" alignItems="center" justifyContent="center"><Csv/></Grid>
-  </Grid> */}
 
-      
       <ul><li><h2>Founders Details:</h2><br></br>{founders_details}</li></ul>
       </Card>:null}
-      
+
      {employee_details.length>0 ? <Card>
+      {/* <Pagination count={10} /> */}
       <ul><li><h2>Employee Details:</h2><br></br>{employee_details}</li></ul>
       </Card>:null}
-      
       </div>}
+
+      <Pagination style={{marginTop:"18px", marginBottom:"25px"}}
+          count={totalPages}
+          variant="outlined"
+          color="primary"
+          page={currentPage}
+          onChange={handleUserPagination}
+        />
+
       {/* {error &&
         <span style={{ color: 'red' }}>{message}</span>} */}
           <ToastContainer position="top-right"
@@ -310,6 +421,7 @@ useEffect(()=>{
           pauseOnFocusLoss
           draggable
           pauseOnHover/>
+
     </section>
   );
 }
