@@ -293,7 +293,7 @@ export default function DropDownFilter(props) {
     const handleDesignation = (event) => {
         console.log("Before Designation2=")
         console.log(designation2)
-        // console.log(event)
+        console.log(event)
         setDesignation2(event)
         console.log("After Designation2=")
         console.log(designation2)
@@ -395,7 +395,6 @@ export default function DropDownFilter(props) {
     //   const designationChangeHandler = (event) => {
     //     setUserDesignation(event.target.value);
     //   };
-
 
     const options = [
         { value: 'Human Resource', label: 'HR' },
