@@ -662,7 +662,7 @@ function FilterTableComponent() {
 
         if (response.data.success === true){
 
-          axios.get(`${ngrokUrl}/api/v1/companies/${id}/resyncing?resync_progress=Synced`, {
+          axios.get(`${ngrokUrl}/api/v1/companies/${id}/resyncing?resync_progress=syncing queued`, {
             headers:{
               'X-USER-TOKEN': localStorage.getItem('token'),
               "X-USER-EMAIL":localStorage.getItem('email')
@@ -700,12 +700,8 @@ function FilterTableComponent() {
               "X-USER-EMAIL":localStorage.getItem('email')
             },
           }).then(function(response){
-
             setUserData(response.data.companies)
           })
-
-
-
           console.log(`After Resync not success = ${resyncing}`)
           toast.error(response.data.message,  {
           position: "top-right",
