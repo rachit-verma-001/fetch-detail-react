@@ -694,7 +694,7 @@ function FilterTableComponent() {
         }
         else{
           setResyncing(false);
-          axios.get(`${ngrokUrl}/api/v1/companies/${id}/resyncing?resync_progress=Improper Synced`, {
+          axios.get(`${ngrokUrl}/api/v1/companies/${id}/resyncing?resync_progress=Synced`, {
             headers:{
               'X-USER-TOKEN': localStorage.getItem('token'),
               "X-USER-EMAIL":localStorage.getItem('email')
