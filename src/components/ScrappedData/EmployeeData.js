@@ -13,7 +13,6 @@ import DropDownFilter from "./DropDownFilter";
 import { ngrokUrl } from '../../store/HostUrl';
 import Pagination from '@material-ui/lab/Pagination';
 
-
 const Img = styled('img')({
   margin: 'auto',
   display: 'block',
@@ -21,7 +20,6 @@ const Img = styled('img')({
   maxHeight: '100%',
   height:'237px'
 });
-
 
 const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
@@ -52,6 +50,8 @@ const EmployeeData = (props) => {
 
   useEffect(() => {
       const axios = require('axios').default;
+
+      axios.defaults.withCredentials=false
 
       localStorage.removeItem('fcity')
       localStorage.removeItem('fstate')
@@ -293,7 +293,6 @@ useEffect(()=>{
             progress: undefined,
             });
           })
-
         }
 
         else{
