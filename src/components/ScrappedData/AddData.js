@@ -18,8 +18,154 @@ import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import TextField from '@mui/material/TextField';
 import { ngrokUrl } from '../../store/HostUrl';
 import Select from 'react-select'
+import ReactTagInput from "@pathofdev/react-tag-input";
+import "@pathofdev/react-tag-input/build/index.css";
 
 const ariaLabel = { 'aria-label': 'description' };
+
+
+
+// const useSortableData = (items, config = null) => {
+//   const [sortConfig, setSortConfig] = React.useState(config);
+
+//   const sortedItems = React.useMemo(() => {
+//     let sortableItems = [...items];
+//     if (sortConfig !== null) {
+//       sortableItems.sort((a, b) => {
+//         if (a[sortConfig.key] < b[sortConfig.key]) {
+//           return sortConfig.direction === 'ascending' ? -1 : 1;
+//         }
+//         if (a[sortConfig.key] > b[sortConfig.key]) {
+//           return sortConfig.direction === 'ascending' ? 1 : -1;
+//         }
+//         return 0;
+//       });
+//     }
+//     return sortableItems;
+//   }, [items, sortConfig]);
+
+//   const requestSort = (key) => {
+//     let direction = 'ascending';
+//     if (
+//       sortConfig &&
+//       sortConfig.key === key &&
+//       sortConfig.direction === 'ascending'
+//     ) {
+//       direction = 'descending';
+//     }
+//     setSortConfig({ key, direction });
+//   };
+
+//   return { items: sortedItems, requestSort, sortConfig };
+// };
+
+
+
+// const ProductTable = (props) => {
+//   const { items, requestSort, sortConfig } = useSortableData(props.products);
+//   const getClassNamesFor = (name) => {
+//     if (!sortConfig) {
+//       return;
+//     }
+//     return sortConfig.key === name ? sortConfig.direction : undefined;
+//   };
+//   return (
+//     <table>
+//       <caption>Products</caption>
+//       <thead>
+//         <tr>
+//           <th>
+//             <button
+//               type="button"
+//               onClick={() => requestSort('name')}
+//               className={getClassNamesFor('name')}
+//             >
+//               Name
+//             </button>
+//           </th>
+//           <th>
+//             <button
+//               type="button"
+//               onClick={() => requestSort('price')}
+//               className={getClassNamesFor('price')}
+//             >
+//               Price
+//             </button>
+//           </th>
+//           <th>
+//             <button
+//               type="button"
+//               onClick={() => requestSort('stock')}
+//               className={getClassNamesFor('stock')}
+//             >
+//               In Stock
+//             </button>
+//           </th>
+//         </tr>
+//       </thead>
+//       <tbody>
+//         {items.map((item) => (
+//           <tr key={item.id}>
+//             <td>{item.name}</td>
+//             <td>${item.price}</td>
+//             <td>{item.stock}</td>
+//           </tr>
+//         ))}
+//       </tbody>
+//     </table>
+//   );
+// };
+
+
+
+// export default function App() {
+//   return (
+//     <div className="App">
+//       <ProductTable
+//         products={[
+//           { id: 1, name: 'Cheese', price: 4.9, stock: 20 },
+//           { id: 2, name: 'Milk', price: 1.9, stock: 32 },
+//           { id: 3, name: 'Yoghurt', price: 2.4, stock: 12 },
+//           { id: 4, name: 'Heavy Cream', price: 3.9, stock: 9 },
+//           { id: 5, name: 'Butter', price: 0.9, stock: 99 },
+//           { id: 6, name: 'Sour Cream ', price: 2.9, stock: 86 },
+//           { id: 7, name: 'Fancy French Cheese 🇫🇷', price: 99, stock: 12 },
+//         ]}
+//       />
+//     </div>
+//   );
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // Define a default UI for filtering
 function GlobalFilter({
@@ -285,7 +431,7 @@ function FilterTableComponent() {
     const [type, setType] = useState('');
     const [count, setCount] = useState(0);
     const [posts, setPosts] = useState([]);
-
+    const [tags, setTags] = React.useState([])
     const [value, setValue] = useState(new Date());
 
     const destroyCompanyDetail = (id) => {
@@ -382,6 +528,8 @@ function FilterTableComponent() {
       else
       {
         const axios = require('axios').default;
+      axios.defaults.withCredentials=false
+
         setError(false)
           const headers = {
             'X-USER-TOKEN': localStorage.getItem('token'),
@@ -395,6 +543,7 @@ function FilterTableComponent() {
             foundation_year:value,
             // posts:posts.map(post=>post.value)
             posts:posts
+            // posts:tags
           }
 
           axios.post(`${ngrokUrl}/api/v1/companies`,data, {
@@ -483,7 +632,12 @@ function FilterTableComponent() {
       //   draggable: true,
       //   progress: undefined,
       // })
+
       const axios = require('axios').default;
+
+
+
+      axios.defaults.withCredentials=false
       axios.get(`${ngrokUrl}/api/v1/companies/${id}/resyncing?resync_progress=syncing in progress`, {
         headers:{
           'X-USER-TOKEN': localStorage.getItem('token'),
@@ -492,6 +646,13 @@ function FilterTableComponent() {
       }).then(function(response){
         setUserData(response.data.companies)
       })
+
+      axios.defaults.withCredentials=false
+
+      axios.get(`${ngrokUrl}/api/v1/companies/${id}/sync?resync_progress=wait for sync`).then(function(response){
+        setUserData(response.data.companies)
+      })
+
 
       console.log(`before 1st Resync = ${resyncing}`)
 
@@ -512,8 +673,16 @@ function FilterTableComponent() {
               "X-USER-EMAIL":localStorage.getItem('email')
             },
           }).then(function(response){
+
             setUserData(response.data.companies)
           })
+
+          axios.defaults.withCredentials=false
+          axios.get(`${ngrokUrl}/api/v1/companies/${id}/sync?resync_progress=ready for sync`).then(function(response){
+            setUserData(response.data.companies)
+          })
+
+
 
           console.log(`after 1st Resync = ${resyncing}`)
           setResyncing(false);
@@ -530,14 +699,21 @@ function FilterTableComponent() {
         }
         else{
           setResyncing(false);
-          axios.get(`${ngrokUrl}/api/v1/companies/${id}/resyncing?resync_progress=Synced`, {
+          axios.get(`${ngrokUrl}/api/v1/companies/${id}/resyncing?resync_progress=Improper Synced`, {
             headers:{
               'X-USER-TOKEN': localStorage.getItem('token'),
               "X-USER-EMAIL":localStorage.getItem('email')
             },
           }).then(function(response){
+
             setUserData(response.data.companies)
           })
+          axios.defaults.withCredentials=false
+          axios.get(`${ngrokUrl}/api/v1/companies/${id}/sync?resync_progress=Ready for sync`).then(function(response){
+            setUserData(response.data.companies)
+          })
+
+
 
           console.log(`After Resync not success = ${resyncing}`)
           toast.error(response.data.message,  {
@@ -615,6 +791,11 @@ function FilterTableComponent() {
 
           </div>
 
+          {/* <ReactTagInput required placeholder = "Posts Click enter to add *"
+            tags={tags}
+            onChange={(newTags) => setTags(newTags)}
+          /> */}
+
               <Grid container spacing={2}>
                 <Grid item>
                   <Box pt={2}>
@@ -640,7 +821,8 @@ function FilterTableComponent() {
           draggable
           pauseOnHover/>
 
-        {< Table columns={columns} data={userData} />}
+{< Table columns={columns} data={userData} />}
+{/* {< ProductTable products = {userData} columns={columns} data={userData} />} */}
       </section>
     )
   }
