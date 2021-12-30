@@ -647,11 +647,6 @@ function FilterTableComponent() {
         setUserData(response.data.companies)
       })
 
-      axios.defaults.withCredentials=false
-
-      axios.get(`${ngrokUrl}/api/v1/companies/${id}/sync?resync_progress=wait for sync`).then(function(response){
-        setUserData(response.data.companies)
-      })
 
 
       console.log(`before 1st Resync = ${resyncing}`)
@@ -677,10 +672,10 @@ function FilterTableComponent() {
             setUserData(response.data.companies)
           })
 
-          axios.defaults.withCredentials=false
-          axios.get(`${ngrokUrl}/api/v1/companies/${id}/sync?resync_progress=ready for sync`).then(function(response){
-            setUserData(response.data.companies)
-          })
+          // axios.defaults.withCredentials=false
+          // axios.get(`${ngrokUrl}/api/v1/companies/${id}/sync?resync_progress=ready for sync`).then(function(response){
+          //   setUserData(response.data.companies)
+          // })
 
 
 
@@ -706,10 +701,6 @@ function FilterTableComponent() {
             },
           }).then(function(response){
 
-            setUserData(response.data.companies)
-          })
-          axios.defaults.withCredentials=false
-          axios.get(`${ngrokUrl}/api/v1/companies/${id}/sync?resync_progress=Ready for sync`).then(function(response){
             setUserData(response.data.companies)
           })
 
