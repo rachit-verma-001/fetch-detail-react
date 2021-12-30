@@ -18,8 +18,8 @@ import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import TextField from '@mui/material/TextField';
 import { ngrokUrl } from '../../store/HostUrl';
 import Select from 'react-select'
-import ReactTagInput from "@pathofdev/react-tag-input";
-import "@pathofdev/react-tag-input/build/index.css";
+// import ReactTagInput from "@pathofdev/react-tag-input";
+// import "@pathofdev/react-tag-input/build/index.css";
 
 const ariaLabel = { 'aria-label': 'description' };
 
