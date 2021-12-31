@@ -385,7 +385,8 @@ function FilterTableComponent() {
                         type='submit' sx = {{mt:20}}
                         disabled = {resyncing? true:false}
                         name= {row.original.id}
-                        onClick={ () => resyncCompanyDetail(row.original.id)
+                        // onClick={ () => resyncCompanyDetail(row.original.id)
+                        onClick={ () => resyncDetail(row.original.id)
                       }
                       >
                         {/* {resyncing ? "Resyncing" : "Resync"} */}
@@ -620,7 +621,28 @@ function FilterTableComponent() {
 
       setPosts(event.target.value.split(","))
     }
-    const resyncCompanyDetail = (id) => {
+
+
+    const resyncDetail = (id) =>{
+      const axios = require('axios').default;
+
+
+
+      axios.defaults.withCredentials=false
+      axios.get(`${ngrokUrl}/api/v1/companies/${id}/resyncing?resync_progress=syncing in progress`, {
+        headers:{
+          'X-USER-TOKEN': localStorage.getItem('token'),
+          "X-USER-EMAIL":localStorage.getItem('email')
+        },
+      }).then(function(response){
+        setUserData(response.data.companies)
+        resyncCompanyDetail(id)
+      })
+
+    }
+
+
+    const resyncCompanyDetail = async (id) => {
 
       // setResyncing(true);
 
@@ -638,15 +660,15 @@ function FilterTableComponent() {
 
 
 
-      axios.defaults.withCredentials=false
-      axios.get(`${ngrokUrl}/api/v1/companies/${id}/resyncing?resync_progress=syncing in progress`, {
-        headers:{
-          'X-USER-TOKEN': localStorage.getItem('token'),
-          "X-USER-EMAIL":localStorage.getItem('email')
-        },
-      }).then(function(response){
-        setUserData(response.data.companies)
-      })
+      // axios.defaults.withCredentials=false
+      // axios.get(`${ngrokUrl}/api/v1/companies/${id}/resyncing?resync_progress=syncing in progress`, {
+      //   headers:{
+      //     'X-USER-TOKEN': localStorage.getItem('token'),
+      //     "X-USER-EMAIL":localStorage.getItem('email')
+      //   },
+      // }).then(function(response){
+      //   setUserData(response.data.companies)
+      // })
 
 
 
@@ -654,7 +676,7 @@ function FilterTableComponent() {
 
 
 
-      axios.get(`${ngrokUrl}/api/v1/resync?company_id=${id}`, {
+      await axios.get(`${ngrokUrl}/api/v1/resync?company_id=${id}`, {
         headers:{
           'X-USER-TOKEN': localStorage.getItem('token'),
           "X-USER-EMAIL":localStorage.getItem('email')
