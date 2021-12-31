@@ -493,6 +493,7 @@ function FilterTableComponent() {
 
     useEffect(() => {
       const axios = require('axios').default;
+      axios.defaults.withCredentials=false
       axios.get(`${ngrokUrl}/api/v1/companies`, {
         headers:{
           'X-USER-TOKEN': localStorage.getItem('token'),
