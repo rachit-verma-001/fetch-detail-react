@@ -125,6 +125,8 @@ const EmployeeData = (props) => {
       <p> {userData.company.tagline}</p>
       <p>Followers:{userData.company.followers}</p>
       <p>No of employees:{userData.company.no_of_employees}</p>
+      <p>About:{userData.company.about}</p>
+
        {/* <h2>Protonshub</h2>
       <p> Tagline:</p>
       <p>Followers:</p>
