@@ -297,6 +297,7 @@ const AvailableData = (props) => {
       <p> {userData.company_detail.tagline}</p>
       <p>Followers:{userData.company_detail.followers}</p>
       <p>No of employees:{userData.company_detail.no_of_employees}</p>
+      <p>About:{userData.company_detail.about}</p>
     </div>
     );
     company_name = userData.company_detail.name;
@@ -318,6 +319,8 @@ const AvailableData = (props) => {
         <p> {userData.company_detail.tagline}</p>
         <p>Followers:{userData.company_detail.followers}</p>
         <p>No of employees:{userData.company_detail.no_of_employees}</p>
+        <p>About:{userData.company_detail.about}</p>
+
       </div>
       );
 
