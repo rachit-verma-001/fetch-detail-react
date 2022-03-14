@@ -670,6 +670,14 @@ function FilterTableComponent() {
       //   setUserData(response.data.companies)
       // })
 
+      toast.success("Syncing in progress",{
+        position: "top-right",
+        autoClose: 150000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        })
 
 
       console.log(`before 1st Resync = ${resyncing}`)
@@ -708,7 +716,7 @@ function FilterTableComponent() {
           console.log(`After Resync Success = ${resyncing}`)
           toast.success("Resync Sucess",{
           position: "top-right",
-          autoClose: 5000,
+          autoClose: 90000,
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
@@ -728,7 +736,7 @@ function FilterTableComponent() {
           console.log(`After Resync not success = ${resyncing}`)
           toast.error(response.data.message,  {
           position: "top-right",
-          autoClose: 5000,
+          autoClose: 90000,
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
